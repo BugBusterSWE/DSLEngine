@@ -26,7 +26,7 @@ function DSLEngine() {
  * `<dbuser>:<dbpassword>@<address>:<port>/<database>/<collection>`
  * @throws {Error}
  */
-DSLEngine.prototype.connectTo = function(database) {
+DSLEngine.prototype.connectTo = function (database) {
     if (this.domain === undefined ) {
 	var connection = mongoose.createConnection(`mongodb://${database}`);
 
@@ -38,7 +38,7 @@ DSLEngine.prototype.connectTo = function(database) {
 	    this.domain = new DslDomain(connection);
 	});
     }
-}
+};
 
 /**
  * @description
@@ -46,9 +46,27 @@ DSLEngine.prototype.connectTo = function(database) {
  * defined connection.
  * @param database {mongoose.Connection}
  * Connection for the collection into the database to perform the action
+ * @throws {Error}
  */
-DSLEngine.prototype.connectWith = function(connection) {
+DSLEngine.prototype.connectWith = function (connection) {
     if (this.domain === undefined) {
 	this.domain = new DslDomain(connection);
     }
-}
+};
+
+/**
+ * @description
+ * Load the dsl into the engine to codifing it.
+ * @param dsl {string}
+ * The code of the dsl
+ * @throws {Error[]}
+ */
+DSLEngine.prototype.loadDSL = function (dsl) {
+    this.domain.loadDSL(dsl);
+    
+    // Errors catched throughout the codification
+    var errors = this.domain.getErrors();
+    if (errors !== undefined) {
+	throw errors;
+    }
+};
