@@ -1,0 +1,27 @@
+{
+  "name": "dslengine",
+  "version": "1.0.0",
+  "description": "Engine to run DSL defined in the MaaP application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BugBusterSWE/DSLEngine.git"
+  },
+  "keywords": [
+    "engine",
+    "dsl",
+    "maap"
+  ],
+  "author": "Andrea Mantovani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BugBusterSWE/DSLEngine/issues"
+  },
+  "homepage": "https://github.com/BugBusterSWE/DSLEngine#readme",
+  "dependencies": {
+    "mongoose": "^4.4.16"
+  }
+}
