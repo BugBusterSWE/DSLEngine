@@ -7,6 +7,10 @@
 * 
 * Version         Date           Programmer
 * =================================================
+* 0.0.1          2015-05-11     Andrea Mantovani
+* -------------------------------------------------
+* Rimosso metodo init
+* =================================================
 * 0.0.1          2014-03-01     Luca De Franceschi
 * -------------------------------------------------
 * Codifica modulo
@@ -29,18 +33,12 @@ var Column = require("./Column");
 var intepreterFile = __dirname + "/macro.sjs";
 
 var DslConcreteStrategy = function() {
-	this.macro = null;
-};
-
-DslConcreteStrategy.prototype.init = function(callback, errback) {
-	var self = this;
 	fs.readFile(intepreterFile, function(err, data) {
 		if (err) {
-			errback(new MaapError(err));
+			throw new MaapError(err);
 		}
 		else {
-			self.macro = sweetjs.loadModule(data);
-			callback();
+			this.macro = sweetjs.loadModule(data);
 		}
 	});
 };

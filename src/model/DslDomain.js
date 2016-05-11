@@ -7,6 +7,11 @@
 * 
 * Version         Date           Programmer
 * =================================================
+* 0.0.1          2016-05-11     Andrea Mantovani
+* -------------------------------------------------
+* Rimosso metodo init
+* Rinominato metodo DslLoadFile in DslLoad
+* =================================================
 * 0.0.1          2014-03-01     Federico Poli
 * -------------------------------------------------
 * Codifica modulo
@@ -22,40 +27,20 @@ var fs = require("fs");
 var DslDomain = function(db) {
 	this.db = db;
 	this.modelRegistry = {};
-	this.errors = [];
 	this.strategy = new DslConcreteStrategy();
 };
 
-DslDomain.prototype.init = function(callback, errback) {
-	this.strategy.init(callback, errback);
-};
-
-DslDomain.prototype.loadDSLFile = function(path, callback) {
-	var self = this;
-	fs.readFile(path, "utf-8", function(err, data) {
-		if (err) {
-			self.registerError(new MaapError(err));
-			callback(err);
-			return;
-		}
-		
-		self.strategy.loadDSLFile(data, self,
-			function(collections) {
-				collections.forEach(function(model) {
-					self.registerCollection(model);
-				});
-				callback(null, collections);
-			},
-			function(maaperror) {
-				self.registerError(maaperror);
-				callback(maaperror);
-			}
-		);
+DslDomain.prototype.loadDSL = function(data, callback) {
+    var self = this;
+    self.strategy.loadDSLFile(data, self, function(collections) {
+	collections.forEach(function(model) {
+	    self.registerCollection(model);
 	});
+    }, function(maaperror) {
+	self.registerError(maaperror);
+    });
 };
-
 DslDomain.prototype.registerError = function(error) {
-	console.log(error);
 	this.errors.push(error);
 };
 
@@ -63,7 +48,10 @@ DslDomain.prototype.registerCollection = function(model) {
 	var id = model.getId();
 
 	if (this.modelRegistry[id] !== undefined) {
-		this.registerError(new MaapError(3001, "The collection '"+model.getName()+"' with id '"+id+"' is defined multiple times"));
+		 this.registerError(new MaapError(
+		    3001, 
+		    "The collection '"+model.getName()+"' with id '"+id+"' is defined multiple times"
+		));
 	}
 	
 	this.modelRegistry[id] = model;
