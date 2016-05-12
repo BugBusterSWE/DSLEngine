@@ -39,6 +39,7 @@ var DslConcreteStrategy = function() {
 	}
 	else {
 	    // Discharge method 'loadModule' in the latest version of sweet.js
+	    // TODO: find a way to use up-to-date sweet.js 
 	    this.macro = sweetjs.loadModule(data);
 	}
     });
