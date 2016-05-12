@@ -4,7 +4,7 @@
   "description": "Engine to run DSL defined in the MaaP application",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/*"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,11 @@
   },
   "homepage": "https://github.com/BugBusterSWE/DSLEngine#readme",
   "dependencies": {
-    "mongoose": "^4.4.16"
+    "mongoose": "^4.4.16",
+    "sweet": "^0.1.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
   }
 }
