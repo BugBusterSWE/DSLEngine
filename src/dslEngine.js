@@ -24,7 +24,7 @@ function DSLEngine() {
  * URL for the collection into the database to perform the action. The url is
  * in the form:
  * `<dbuser>:<dbpassword>@<address>:<port>/<database>/<collection>`
- * @throws {Error}
+ * @throws {MaaPError}
  */
 DSLEngine.prototype.connectTo = function (database) {
     if (this.domain === undefined ) {
@@ -46,7 +46,7 @@ DSLEngine.prototype.connectTo = function (database) {
  * defined connection.
  * @param database {mongoose.Connection}
  * Connection for the collection into the database to perform the action
- * @throws {Error}
+ * @throws {MaaPError}
  */
 DSLEngine.prototype.connectWith = function (connection) {
     if (this.domain === undefined) {
@@ -59,7 +59,7 @@ DSLEngine.prototype.connectWith = function (connection) {
  * Load the dsl into the engine to codifing it.
  * @param dsl {string}
  * The code of the dsl
- * @throws {Error[]}
+ * @throws {MaaPError[]}
  */
 DSLEngine.prototype.loadDSL = function (dsl) {
     this.domain.loadDSL(dsl);
@@ -70,3 +70,5 @@ DSLEngine.prototype.loadDSL = function (dsl) {
 	throw errors;
     }
 };
+
+module.exports = DslEngine;
