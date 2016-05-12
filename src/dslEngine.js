@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var domain = require("./model/DslDomain.js");
+var DslDomain = require("./model/DslDomain.js");
 
 /**
  * Core class, it keep manage the connesion with MongoDB and run the DSL passed in text format.
@@ -7,6 +7,7 @@ var domain = require("./model/DslDomain.js");
  * @history
  * | Name | Action performed | Date |
  * | ---  | ---              | ---  |
+ * | Andrea Mantovani | Update document and correct import | 2016-05-12 |
  * | Andrea Mantovani | Create class | 2016-05-11 |
  * 
  * @author Andrea Mantovani
@@ -25,9 +26,10 @@ var DSLEngine = function () {
  * in the form:
  * `<dbuser>:<dbpassword>@<address>:<port>/<database>/<collection>`
  * @return {Promise}
- * The promise of the connection to the db. The promise is resolve with nothing
- * if no errors is occurred, otherwise, with the errors. If an istance of 
- * DSLEngine was create, the promise is always resolve.
+ * The promise of the connection to the db and initial process. The promise
+ * is resolve with nothing if no errors is occurred, otherwise with the
+ * errors. If an istance of DSLEngine was create, the promise is always 
+ * resolve.
  */
 DSLEngine.prototype.connectTo = function (database) {
     return new Promise((resolve, reject) => {
@@ -39,8 +41,14 @@ DSLEngine.prototype.connectTo = function (database) {
 	    });
 
 	    connection.on("open", function(ref) {
-		// Use the connection to perform the DSL
-		this.domain = new DslDomain(connection);
+		// Error to read the macro
+		try {
+		    // Use the connection to perform the DSL
+		    this.domain = new DslDomain(connection);
+		} catch (err) {
+		    reject(err);
+		}
+		    
 		resolve();
 	    });
 	 } else { 
