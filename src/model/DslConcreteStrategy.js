@@ -33,14 +33,15 @@ var Column = require("./Column");
 var intepreterFile = __dirname + "/macro.sjs";
 
 var DslConcreteStrategy = function() {
-	fs.readFile(intepreterFile, function(err, data) {
-		if (err) {
-			throw new MaapError(err);
-		}
-		else {
-			this.macro = sweetjs.loadModule(data);
-		}
-	});
+    fs.readFile(intepreterFile, function(err, data) {
+	if (err) {
+	    throw new MaapError(err);
+	}
+	else {
+	    // Discharge method 'loadModule' in the latest version of sweet.js
+	    this.macro = sweetjs.loadModule(data);
+	}
+    });
 };
 
 DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errback) {
