@@ -19,11 +19,11 @@
 
 "use strict";
 
-var AttributeReader = require("../../utils/AttributeReader");
+var AttributeReader = require("../utils/AttributeReader");
 var DocumentSchema = require("./DocumentSchema");
 var ShowModel = require("./ShowModel");
 var IndexModel = require("./IndexModel");
-var MaapError = require("../../utils/MaapError");
+var MaapError = require("../utils/MaapError");
 
 
 var DslCollectionModel = function(dslDomain, params) {

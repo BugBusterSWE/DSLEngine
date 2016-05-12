@@ -17,7 +17,7 @@
 
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var MaapError = require("../../utils/MaapError");
+var MaapError = require("../utils/MaapError");
 
 var DocumentSchema = new Schema({}, {strict: false});
 

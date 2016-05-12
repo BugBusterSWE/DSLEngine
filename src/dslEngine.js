@@ -12,7 +12,7 @@ var domain = require("./model/DslDomain.js");
  * @author Andrea Mantovani
  * @license MIT
  */
-function DSLEngine() {
+var DSLEngine = function () {
     this.domain = undefined;
 }
 
@@ -24,20 +24,29 @@ function DSLEngine() {
  * URL for the collection into the database to perform the action. The url is
  * in the form:
  * `<dbuser>:<dbpassword>@<address>:<port>/<database>/<collection>`
- * @throws {MaaPError}
+ * @return {Promise}
+ * The promise of the connection to the db. The promise is resolve with nothing
+ * if no errors is occurred, otherwise, with the errors. If an istance of 
+ * DSLEngine was create, the promise is always resolve.
  */
 DSLEngine.prototype.connectTo = function (database) {
-    if (this.domain === undefined ) {
-	var connection = mongoose.createConnection(`mongodb://${database}`);
+    return new Promise((resolve, reject) => {
+	if (this.domain === undefined ) {
+	    var connection = mongoose.createConnection(`mongodb://${database}`);
 
-        connection.on("error", function(err) {
-	    throw err;
-	});
-	connection.on("open", function(ref) {
-	    // Use the connection to perform the DSL
-	    this.domain = new DslDomain(connection);
-	});
-    }
+	    connection.on("error", function(err) {
+		reject(err);
+	    });
+
+	    connection.on("open", function(ref) {
+		// Use the connection to perform the DSL
+		this.domain = new DslDomain(connection);
+		resolve();
+	    });
+	 } else { 
+	     resolve();
+	 }
+    });
 };
 
 /**
@@ -71,4 +80,4 @@ DSLEngine.prototype.loadDSL = function (dsl) {
     }
 };
 
-module.exports = DslEngine;
+module.exports = DSLEngine;

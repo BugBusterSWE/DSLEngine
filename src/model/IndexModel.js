@@ -15,9 +15,9 @@
 
 "use strict";
 
-var AttributeReader = require("../../utils/AttributeReader");
+var AttributeReader = require("../utils/AttributeReader");
 var Column = require("./Column");
-var MaapError = require("../../utils/MaapError");
+var MaapError = require("../utils/MaapError");
 var ObjectUtils = require("./ObjectUtils");
 
 var IndexModel = function(collectionModel, params) {

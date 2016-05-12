@@ -15,8 +15,8 @@
 
 "use strict";
 
-var AttributeReader = require("../../utils/AttributeReader");
-var MaapError = require("../../utils/MaapError");
+var AttributeReader = require("../utils/AttributeReader");
+var MaapError = require("../utils/MaapError");
 
 var identity = function(x) { return x; };
 

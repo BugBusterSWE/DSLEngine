@@ -21,7 +21,7 @@
 
 var sweetjs = require("sweet.js");
 var fs = require("fs");
-var MaapError = require("../../utils/MaapError.js");
+var MaapError = require("../utils/MaapError.js");
 var vm = require("vm");
 
 var DslCollectionModel = require("./DslCollectionModel");

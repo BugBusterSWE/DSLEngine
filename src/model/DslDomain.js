@@ -21,7 +21,7 @@
 "use strict";
 
 var DslConcreteStrategy = require("./DslConcreteStrategy");
-var MaapError = require("../../utils/MaapError.js");
+var MaapError = require("../utils/MaapError.js");
 
 var DslDomain = function(db) {
 	this.db = db;
