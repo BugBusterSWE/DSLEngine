@@ -43,7 +43,7 @@ var DslConcreteStrategy = function() {
 	});
 };
 
-DslConcreteStrategy.prototype.loadDSLFile = function(content, domain, callback, errback) {
+DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errback) {
 	var out = null;
 	try {
 		out = sweetjs.compile(content, {
