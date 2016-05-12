@@ -22,7 +22,6 @@
 
 var DslConcreteStrategy = require("./DslConcreteStrategy");
 var MaapError = require("../../utils/MaapError.js");
-var fs = require("fs");
 
 var DslDomain = function(db) {
 	this.db = db;
@@ -32,7 +31,7 @@ var DslDomain = function(db) {
 
 DslDomain.prototype.loadDSL = function(data, callback) {
     var self = this;
-    self.strategy.loadDSLFile(data, self, function(collections) {
+    self.strategy.loadDSL(data, self, function(collections) {
 	collections.forEach(function(model) {
 	    self.registerCollection(model);
 	});
@@ -40,6 +39,7 @@ DslDomain.prototype.loadDSL = function(data, callback) {
 	self.registerError(maaperror);
     });
 };
+
 DslDomain.prototype.registerError = function(error) {
 	this.errors.push(error);
 };
