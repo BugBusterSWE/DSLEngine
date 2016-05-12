@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-var domain = require("model/DslDomain.js");
+var domain = require("./model/DslDomain.js");
 
 /**
  * Core class, it keep manage the connesion with MongoDB and run the DSL passed in text format.
