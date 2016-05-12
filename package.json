@@ -4,7 +4,7 @@
   "description": "Engine to run DSL defined in the MaaP application",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*"
+    "test": "mocha test/* -t 0"
   },
   "repository": {
     "type": "git",
