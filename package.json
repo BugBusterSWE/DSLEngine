@@ -2,7 +2,7 @@
   "name": "dslengine",
   "version": "1.0.0",
   "description": "Engine to run DSL defined in the MaaP application",
-  "main": "index.js",
+  "main": "src/dslEngine.js",
   "scripts": {
     "test": "mocha test/* -t 0"
   },
