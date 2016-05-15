@@ -15,7 +15,7 @@ var DslDomain = require("./model/DslDomain.js");
  */
 var DSLEngine = function () {
     this.domain = undefined;
-}
+};
 
 /**
  * @description
@@ -88,6 +88,30 @@ DSLEngine.prototype.loadDSL = function (dsl) {
     if (errors !== undefined) {
 		throw errors;
     }
+};
+
+/**
+ * @description 
+ * Return the summary of any collections loaded in the engine.
+ * @return {Array<Object>}
+ * The summary object have three attributs:
+ * * id: Id of the collection
+ * * name: Name of the collection
+ * * label: Label of the collection
+ */
+DSLEngine.prototype.getCollections = function () {
+	var models = this.domain.getCollectionModels();
+	var collections = [];
+
+	models.forEach((model) => {
+		collections.push({
+			id: model.getId(),
+			name: model.getName(),
+			label: model.getLabel()
+		});
+	});
+
+	return collections;
 };
 
 module.exports = DSLEngine;
