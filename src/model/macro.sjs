@@ -13,7 +13,7 @@ syntax row = function (ctx) {
         paramCtx.next();
     }
     
-    result = #`var _row = new Row({${result}}) _show.addRow(_row)`;
+    result = #`var _row = new Row(_show, {${result}}) _show.addRow(_row)`;
      
     return result;
 }
@@ -33,7 +33,7 @@ syntax column = function (ctx) {
         paramCtx.next();
     }
     
-    result = #`var _column = new Column({${result}}) _index.addColumn(_column)`;
+    result = #`var _column = new Column(_index, {${result}}) _index.addColumn(_column)`;
      
     return result;
 }
