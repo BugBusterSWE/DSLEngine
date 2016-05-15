@@ -7,6 +7,10 @@
 * 
 * Version         Date           Programmer
 * =================================================
+* 0.0.1          2015-05-15     Andrea Mantovani
+* -------------------------------------------------
+* Aggiornata elaborazione dsl con Sweet.js 1.x
+* =================================================
 * 0.0.1          2015-05-11     Andrea Mantovani
 * -------------------------------------------------
 * Rimosso metodo init
@@ -19,7 +23,7 @@
 
 "use strict";
 
-var sweetjs = require("sweet.js");
+var SweetjsCompiler = require("sweetjs-compiler.js");
 var fs = require("fs");
 var MaapError = require("../utils/MaapError.js");
 var vm = require("vm");
@@ -30,27 +34,28 @@ var ShowModel = require("./ShowModel");
 var Row = require("./Row");
 var Column = require("./Column");
 
-var intepreterFile = __dirname + "/macro.sjs";
-
 var DslConcreteStrategy = function() {
-    fs.readFile(intepreterFile, function(err, data) {
-	if (err) {
-	    throw new MaapError(err);
-	}
-	else {
-	    // Discharge method 'loadModule' in the latest version of sweet.js
-	    // TODO: find a way to use up-to-date sweet.js 
-	    this.macro = sweetjs.loadModule(data);
-	}
+	this.sweetjs = new SweetjsCompiler({
+		ambient: __dirname	
+	});
+
+    fs.readFile("./macro.sjs", function(err, data) {
+		if (err) {
+			throw new MaapError(err);
+		}
+		else {
+			this.cachedMacro = data;
+		}
     });
 };
 
 DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errback) {
+	// Inject the macro syntax into the content	
+	content = `${this.cachedMacro}\n\n\${content}`;	
+
 	var out = null;
 	try {
-		out = sweetjs.compile(content, {
-			modules: [this.macro]
-		});
+		out = this.sweetjs.compile(content);
 	} catch(err) {
 		errback(new MaapError(err));
 		return;
@@ -81,3 +86,4 @@ DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errb
 };
 
 module.exports = DslConcreteStrategy;
+
