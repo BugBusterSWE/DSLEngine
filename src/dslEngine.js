@@ -32,8 +32,10 @@ var DSLEngine = function () {
  * resolve.
  */
 DSLEngine.prototype.connectTo = function (database) {
+	var self = this;
+
     return new Promise((resolve, reject) => {
-	if (this.domain === undefined ) {
+	if (self.domain === undefined ) {
 	    var connection = mongoose.createConnection(`mongodb://${database}`);
 
 	    connection.on("error", function(err) {
@@ -44,12 +46,12 @@ DSLEngine.prototype.connectTo = function (database) {
 		// Error to read the macro
 		try {
 		    // Use the connection to perform the DSL
-		    this.domain = new DslDomain(connection);
+		    self.domain = new DslDomain(connection);
 		} catch (err) {
 		    reject(err);
 		}
 		    
-		resolve();
+		resolve(ref);
 	    });
 	 } else { 
 	     resolve();
@@ -67,7 +69,7 @@ DSLEngine.prototype.connectTo = function (database) {
  */
 DSLEngine.prototype.connectWith = function (connection) {
     if (this.domain === undefined) {
-	this.domain = new DslDomain(connection);
+		this.domain = new DslDomain(connection);
     }
 };
 
@@ -84,8 +86,9 @@ DSLEngine.prototype.loadDSL = function (dsl) {
     // Errors catched throughout the codification
     var errors = this.domain.getErrors();
     if (errors !== undefined) {
-	throw errors;
+		throw errors;
     }
 };
 
 module.exports = DSLEngine;
+
