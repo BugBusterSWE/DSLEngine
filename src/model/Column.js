@@ -28,7 +28,7 @@ var Column = function(indexModel, params) {
 	this.selectable = false;
 	this.sortable = false;
 	this.transformation = identity;
-	
+
 	// Leggi i parametri obbligatori e opzionali
 	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
 		throw new MaapError(15000, "Required parameter " + param + " in collection '" + self.indexModel.collectionModel.toString() + "', column '" + self.toString() + "'");

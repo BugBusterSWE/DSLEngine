@@ -35,7 +35,7 @@ var DslCollectionModel = function(dslDomain, params) {
 
 	this.showModel = new ShowModel(this, {});
 	this.indexModel = new IndexModel(this, {});
-		
+
 	// Leggi i parametri obbligatori e opzionali
 	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
 		throw new MaapError(8000, "Required parameter '" + param + "' in collection '" + self.toString() + "'");

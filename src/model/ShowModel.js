@@ -24,7 +24,7 @@ var ShowModel = function(collectionModel, params) {
 	var self = this;
 	this.collectionModel = collectionModel;
 	this.attributes = [];
-	
+
 	// Leggi i parametri obbligatori e opzionali
 	AttributeReader.readRequiredAttributes(params, this, [], function(param){
 		throw new MaapError(13000, "Required parameter '" + param + "' in collection '" + self.collectionModel.toString() + "', show");

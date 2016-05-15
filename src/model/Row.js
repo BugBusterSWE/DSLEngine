@@ -26,7 +26,7 @@ var Row = function(showModel, params) {
 	
 	// Valori di default
 	this.transformation = identity;
-	
+
 	// Leggi i parametri obbligatori e opzionali
 	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
 		throw new MaapError(16000, "Required parameter '" + param + "' in collection '" + self.showModel.collectionModel.toString() + "', row '" + self.toString() + "'");
