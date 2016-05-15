@@ -23,7 +23,7 @@
 
 "use strict";
 
-var SweetjsCompiler = require("sweetjs-compiler.js");
+var SweetjsCompiler = require("sweetjs-compiler");
 var fs = require("fs");
 var MaapError = require("../utils/MaapError.js");
 var vm = require("vm");
@@ -39,19 +39,16 @@ var DslConcreteStrategy = function() {
 		ambient: __dirname	
 	});
 
-    fs.readFile("./macro.sjs", function(err, data) {
-		if (err) {
-			throw new MaapError(err);
-		}
-		else {
-			this.cachedMacro = data;
-		}
-    });
+	try {
+    	this.cachedMacro = fs.readFileSync(`${__dirname}/macro.sjs`, "utf-8");
+	} catch (err) {
+		throw new MaapError(err);	
+	}
 };
 
 DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errback) {
-	// Inject the macro syntax into the content	
-	content = `${this.cachedMacro}\n\n\${content}`;	
+	// Inject the macro syntax into the content
+	content = `${this.cachedMacro}\n\n${content}`;
 
 	var out = null;
 	try {
@@ -65,7 +62,7 @@ DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errb
 	var registerCollection = function(coll) {
 		collections.push(coll);
 	};
-	
+
 	try {
 		vm.runInNewContext(out.code, {
 			registerCollection: registerCollection,
