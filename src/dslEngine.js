@@ -34,10 +34,10 @@ var DSLEngine = function () {
  * resolve.
  */
 DSLEngine.prototype.connectTo = function (database) {
-	var self = this;
+    var self = this;
 
     return new Promise((resolve, reject) => {
-	if (self.domain === undefined ) {
+	if (self.domain === undefined) {
 	    var connection = mongoose.createConnection(
 		`mongodb://${database}`
 	    );
@@ -54,12 +54,12 @@ DSLEngine.prototype.connectTo = function (database) {
 		} catch (err) {
 		    reject(err);
 		}
-		    
+		
 		resolve(ref);
 	    });
-	 } else { 
-	     resolve();
-	 }
+	} else { 
+	    resolve();
+	}
     });
 };
 
@@ -73,7 +73,7 @@ DSLEngine.prototype.connectTo = function (database) {
  */
 DSLEngine.prototype.connectWith = function (connection) {
     if (this.domain === undefined) {
-		this.domain = new DslDomain(connection);
+	this.domain = new DslDomain(connection);
     }
 };
 
@@ -90,7 +90,7 @@ DSLEngine.prototype.loadDSL = function (dsl) {
     // Errors catched throughout the codification
     var errors = this.domain.getErrors();
     if (errors !== undefined) {
-		throw errors;
+	throw errors;
     }
 };
 
@@ -104,18 +104,18 @@ DSLEngine.prototype.loadDSL = function (dsl) {
  * * label: Label of the collection
  */
 DSLEngine.prototype.getCollections = function () {
-	var models = this.domain.getCollectionModels();
-	var collections = [];
+    var models = this.domain.getCollectionModels();
+    var collections = [];
 
-	models.forEach((model) => {
-		collections.push({
-			id: model.getId(),
-			name: model.getName(),
-			label: model.getLabel()
-		});
+    models.forEach((model) => {
+	collections.push({
+	    id: model.getId(),
+	    name: model.getName(),
+	    label: model.getLabel()
 	});
+    });
 
-	return collections;
+    return collections;
 };
 
 /**
@@ -134,26 +134,26 @@ DSLEngine.prototype.getCollections = function () {
  * resolve with an IndexPage, otherwise it is reject with a MaapError.
  */
 DSLEngine.prototype.getIndexPage = function (id, option) {
-	var collection = this.domain.getCollectionModel(id);
-	
-	return new Promise((resolve, reject) => {
-		if (collection) {
-			var indexModel = collection.getIndexModel();
-			indexModel.getData(
-				option.page,
-				option.sort,
-				option.order,
-				(data) => {
-					resolve(data);
-				},
-				(err) => {
-					reject(err);
-				}
-			);
-		} else {
-			reject(new MaapError(7000));
+    var collection = this.domain.getCollectionModel(id);
+    
+    return new Promise((resolve, reject) => {
+	if (collection) {
+	    var indexModel = collection.getIndexModel();
+	    indexModel.getData(
+		option.page,
+		option.sort,
+		option.order,
+		(data) => {
+		    resolve(data);
+		},
+		(err) => {
+		    reject(err);
 		}
-	});
+	    );
+	} else {
+	    reject(new MaapError(7000));
+	}
+    });
 };
 
 /** 
@@ -168,24 +168,24 @@ DSLEngine.prototype.getIndexPage = function (id, option) {
  * resolve with an ShowPage, otherwise it is reject with a MaapError.
  */
 DSLEngine.prototype.getShowPage = function (collectionId, documentId) {
-	var collection = this.domain.getCollectionModel(collectionId);
-	
-	return new Promise((resolve, reject) => {
-		if (!collection) {
-			reject(new MaapError(18000));
-		} else {
-			var showModel = collection.getShowModel();
-			showModel.getData(
-				documentId,
-				(data) => {
-					resolve(data);
-				},
-				(error) => {
-					reject(error);
-				}
-			);
+    var collection = this.domain.getCollectionModel(collectionId);
+    
+    return new Promise((resolve, reject) => {
+	if (!collection) {
+	    reject(new MaapError(18000));
+	} else {
+	    var showModel = collection.getShowModel();
+	    showModel.getData(
+		documentId,
+		(data) => {
+		    resolve(data);
+		},
+		(error) => {
+		    reject(error);
 		}
-	});
+	    );
+	}
+    });
 };
 
 /**
