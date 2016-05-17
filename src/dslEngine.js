@@ -236,7 +236,7 @@ DSLEngine.prototype.deleteDocument = function (collectionId, documentId) {
  * The promise is resolve with the up-to-date data and it is reject with a 
  * MaapError if a error is occurred.
  */
-DSLEngine.prototype.editDocument = function (collectionId,documentId,content) {
+DSLEngine.prototype.editDocument = function (collectionId, documentId, content) {
     var collection = this.domain.getCollectionModel(collectionId);
 
     return new Promise((resolve, reject) => {
