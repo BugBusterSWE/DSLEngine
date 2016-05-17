@@ -201,19 +201,19 @@ DSLEngine.prototype.deleteDocument = function (collectionId, documentId) {
 	return new Promise((resolve, reject) => {
 		if (!collection) {
 			reject(new MaapError(18000));
-			return;
-		}
+		} else {
 
-		var showModel = collection.getShowModel();
-		showModel.deleteDocument(
+		    var showModel = collection.getShowModel();
+		    showModel.deleteDocument(
 			documentId,
 			function() {
-				resolve();
+			    resolve();
 			},
 			function(error) {
-				reject(error);
+			    reject(error);
 			}
-		);
+		    );
+		}
 	});
 };
 
