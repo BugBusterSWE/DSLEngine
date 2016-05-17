@@ -210,10 +210,10 @@ DSLEngine.prototype.deleteDocument = function (collectionId, documentId) {
 	    var showModel = collection.getShowModel();
 	    showModel.deleteDocument(
 		documentId,
-		function() {
+		() => {
 		    resolve();
 		},
-		function(error) {
+		(error) => {
 		    reject(error);
 		}
 	    );
@@ -247,10 +247,10 @@ DSLEngine.prototype.editDocument = function (collectionId, documentId, content) 
 	    showModel.updateDocument(
 		documentId,
 		content,
-		function(data) {
+		(data) => {
 		    resolve(data.toObject);
 		},
-		function(error) {
+		(error) => {
 		    reject(error);
 		}
 	    );
