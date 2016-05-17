@@ -184,6 +184,17 @@ DSLEngine.prototype.getShowPage = function (collectionId, documentId) {
 	});
 };
 
+/**
+ * @description
+ * Delete the collection refered by id of the collection and document.
+ * @param collectionId {string}
+ * Id of the collection
+ * @param documentId {string}
+ * Id of the document
+ * @return {Promise<void>}
+ * The promise is reject with a MaapError if an error has been occurred, 
+ * otherwise it is resolve with nothing.
+ */
 DSLEngine.prototype.deleteDocument = function (collectionId, documentId) {
 	var collection = this.domain.getCollectionModel(collectionId);
 
@@ -195,12 +206,12 @@ DSLEngine.prototype.deleteDocument = function (collectionId, documentId) {
 
 		var showModel = collection.getShowModel();
 		showModel.deleteDocument(
-			req.params.documentId,
+			documentId,
 			function() {
-				res.end();
+				resolve();
 			},
 			function(error) {
-				next(error);
+				reject(error);
 			}
 		);
 	});
