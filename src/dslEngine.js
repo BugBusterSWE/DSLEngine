@@ -3,7 +3,8 @@ var DslDomain = require("./model/DslDomain.js");
 var MaapError = require("./utils/MaapError.js");
 
 /**
- * Core class, it keep manage the connesion with MongoDB and run the DSL passed in text format.
+ * Core class, it keep manage the connesion with MongoDB and run the DSL passed 
+ * in text format.
  * 
  * @history
  * | Name | Action performed | Date |
@@ -37,7 +38,9 @@ DSLEngine.prototype.connectTo = function (database) {
 
     return new Promise((resolve, reject) => {
 	if (self.domain === undefined ) {
-	    var connection = mongoose.createConnection(`mongodb://${database}`);
+	    var connection = mongoose.createConnection(
+		`mongodb://${database}`
+	    );
 
 	    connection.on("error", function(err) {
 		reject(err);
@@ -121,13 +124,14 @@ DSLEngine.prototype.getCollections = function () {
  * @param id {string}
  * Id of the collection where is define the index page information
  * @param option {Object}
- * The query to show the index page. The query is a object with the follow attributes:
+ * The query to show the index page. The query is a object with the follow 
+ * attributes:
  * * page
  * * sort
  * * order
  * @return {Promise<IndexPage>}
- * The promise for the informations to build the Index Page. The promise is resolve
- * with an IndexPage, otherwise it is reject with a MaapError.
+ * The promise for the informations to build the Index Page. The promise is 
+ * resolve with an IndexPage, otherwise it is reject with a MaapError.
  */
 DSLEngine.prototype.getIndexPage = function (id, option) {
 	var collection = this.domain.getCollectionModel(id);
@@ -160,8 +164,8 @@ DSLEngine.prototype.getIndexPage = function (id, option) {
  * @param documentId {string}
  * Id of the document where is store the datas to populate the Show Page
  * @return {Promise<ShowPage>}
- * The promise for the informations to build the Show Page. The promise is resolve
- * with an ShowPage, otherwise it is reject with a MaapError.
+ * The promise for the informations to build the Show Page. The promise is 
+ * resolve with an ShowPage, otherwise it is reject with a MaapError.
  */
 DSLEngine.prototype.getShowPage = function (collectionId, documentId) {
 	var collection = this.domain.getCollectionModel(collectionId);
@@ -196,25 +200,62 @@ DSLEngine.prototype.getShowPage = function (collectionId, documentId) {
  * otherwise it is resolve with nothing.
  */
 DSLEngine.prototype.deleteDocument = function (collectionId, documentId) {
-	var collection = this.domain.getCollectionModel(collectionId);
+    var collection = this.domain.getCollectionModel(collectionId);
 
-	return new Promise((resolve, reject) => {
-		if (!collection) {
-			reject(new MaapError(18000));
-		} else {
+    return new Promise((resolve, reject) => {
+	if (!collection) {
+	    reject(new MaapError(18000));
+	} else {
 
-		    var showModel = collection.getShowModel();
-		    showModel.deleteDocument(
-			documentId,
-			function() {
-			    resolve();
-			},
-			function(error) {
-			    reject(error);
-			}
-		    );
+	    var showModel = collection.getShowModel();
+	    showModel.deleteDocument(
+		documentId,
+		function() {
+		    resolve();
+		},
+		function(error) {
+		    reject(error);
 		}
-	});
+	    );
+	}
+    });
+};
+
+/**
+ * @description
+ * Edit the document into the collection selected by id with the content
+ * specifeied.
+ * @param collectionId {string}
+ * The id of the collection
+ * @param documentId {string}
+ * The id of the document
+ * @param content {Object}
+ * The content to edit the document
+ * @return {Promise<Object>}
+ * The promise represent the asynchronous editing operation of the document.
+ * The promise is resolve with the up-to-date data and it is reject with a 
+ * MaapError if a error is occurred.
+ */
+DSLEngine.prototype.editDocument = function (collectionId,documentId,content) {
+    var collection = this.domain.getCollectionModel(collectionId);
+
+    return new Promise((resolve, reject) => {
+	if (!collection) {
+	    reject(new MaapError(18000));
+	} else {
+	    var showModel = collection.getShowModel();
+	    showModel.updateDocument(
+		documentId,
+		content,
+		function(data) {
+		    resolve(data.toObject);
+		},
+		function(error) {
+		    reject(error);
+		}
+	    );
+	}
+    });
 };
 
 module.exports = DSLEngine;
