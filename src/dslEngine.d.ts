@@ -78,7 +78,7 @@
 	order : string;
     }
 
-    export class MaapError {
+    export interface MaapError {
         toDict() : Dict;
         toString() : string;
         toError() : Error;
