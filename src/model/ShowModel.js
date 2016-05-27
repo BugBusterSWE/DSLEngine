@@ -34,6 +34,8 @@ var ShowModel = function(collectionModel, params) {
 	AttributeReader.assertEmptyAttributes(params, function(param){
 		throw new MaapError(13000, "Unexpected parameter '" + param + "' in collection '" + self.collectionModel.toString() + "', show");
 	});
+
+    this.noMoreRows();
 };
 
 ShowModel.prototype.addRow = function(attribute) {

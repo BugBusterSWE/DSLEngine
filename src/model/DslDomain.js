@@ -23,40 +23,36 @@
 var DslConcreteStrategy = require("./DslConcreteStrategy");
 var MaapError = require("../utils/MaapError.js");
 
+var _prefix = "_id";
+
 var DslDomain = function(db) {
-	this.db = db;
-	this.modelRegistry = {};
-	this.strategy = new DslConcreteStrategy();
+    this.db = db;
+    this.modelRegistry = {};
+    this.strategy = new DslConcreteStrategy();
+    this.id = 0;
 };
 
 DslDomain.prototype.loadDSL = function(data, callback) {
     var self = this;
     self.strategy.loadDSL(data, self, function(collections) {
+	var ids = [];
+
 	collections.forEach(function(model) {
-	    self.registerCollection(model);
+	    ids.push(self.register(model));
 	});
+
+	callback(undefined, ids);
+
     }, function(maaperror) {
-	self.registerError(maaperror);
+	callback(maaperror, undefined);
     });
 };
 
-DslDomain.prototype.registerError = function(error) {
-	this.errors.push(error);
-};
-
-DslDomain.prototype.registerCollection = function(model) {
-	var id = model.getId();
-
-	if (this.modelRegistry[id] !== undefined) {
-		 this.registerError(new MaapError(
-		    3001, 
-		    "The collection '"+model.getName()+"' with id '"+id+"' is defined multiple times"
-		));
-	}
-	
-	this.modelRegistry[id] = model;
-	model.indexModel.noMoreColumns();
-	model.showModel.noMoreRows();
+DslDomain.prototype.register = function(model) {
+    var idc = `${_prefix}${this.id++}`;
+    this.modelRegistry[idc] = model;
+    
+    return idc;
 };
 
 DslDomain.prototype.getCollectionModel = function(collectionId) {
@@ -86,10 +82,6 @@ DslDomain.prototype.getCollectionModels = function() {
 	models.sort(compareCollectionWeight);
 	
 	return models;
-};
-
-DslDomain.prototype.getErrors = function() {
-	return this.errors;
 };
 
 module.exports = DslDomain;

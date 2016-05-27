@@ -85,13 +85,15 @@ DSLEngine.prototype.connectWith = function (connection) {
  * @throws {MaaPError[]}
  */
 DSLEngine.prototype.loadDSL = function (dsl) {
-    this.domain.loadDSL(dsl);
-    
-    // Errors catched throughout the codification
-    var errors = this.domain.getErrors();
-    if (errors !== undefined) {
-	throw errors;
-    }
+    return new Promise((resolve, reject) => {
+	this.domain.loadDSL(dsl, (err, ids) => {
+	    if (err) {
+		reject(err);
+	    } else {
+		resolve(ids);
+	    }
+	});
+    });
 };
 
 /**

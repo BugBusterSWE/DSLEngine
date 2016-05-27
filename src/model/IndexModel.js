@@ -56,6 +56,8 @@ var IndexModel = function(collectionModel, params) {
 	if (typeof this.query !== 'object') {
 		throw new MaapError(14000, "Unexpected value of param 'query' in collection '" + self.collectionModel.toString() + "', index: 'object' required, got '" + typeof this.query + "'");
 	}
+
+    this.noMoreColumns();
 };
 
 IndexModel.prototype.addColumn = function(attribute) {
