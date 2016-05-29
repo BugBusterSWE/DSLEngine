@@ -24,9 +24,9 @@ var DslConcreteStrategy = require("./DslConcreteStrategy");
 var MaapError = require("../utils/MaapError.js");
 
 var _prefix = "_id";
+var engine = new Engine();
 
-var DslDomain = function(db) {
-    this.db = db;
+var DslDomain = function() {
     this.modelRegistry = {};
     this.strategy = new DslConcreteStrategy();
     this.id = 0;
@@ -34,17 +34,17 @@ var DslDomain = function(db) {
 
 DslDomain.prototype.loadDSL = function(data, callback) {
     var self = this;
-    self.strategy.loadDSL(data, self, function(collections) {
-	var ids = [];
+    self.strategy.loadDSL(data, self, function(models) {
+		var ids = []
 
-	collections.forEach(function(model) {
-	    ids.push(self.register(model));
-	});
+		models.forEach(function(model) {
+			ids.push(self.register(model));
+		});
 
-	callback(undefined, ids);
+		callback(undefined, ids);
 
     }, function(maaperror) {
-	callback(maaperror, undefined);
+		callback(maaperror, undefined);
     });
 };
 
@@ -52,12 +52,20 @@ DslDomain.prototype.register = function(model) {
     var idc = `${_prefix}${this.id++}`;
     this.modelRegistry[idc] = model;
     
-    return idc;
+    return {
+		token: idc,
+		type: model.constructor.name;
+	};
 };
 
-DslDomain.prototype.getCollectionModel = function(collectionId) {
-	return this.modelRegistry[collectionId];
+DslDomain.prototype.getByToken = function(token) {
+	return this.modelRegistry[token];
 };
+
+DslDomain.prototype.getAll = function() {
+	return this.modelRegistry;
+};
+
 
 var compareCollectionWeight = function(a, b) {
 	var aw = a.getWeight();
@@ -84,4 +92,4 @@ DslDomain.prototype.getCollectionModels = function() {
 	return models;
 };
 
-module.exports = DslDomain;
+module.exports = DslDomain;db
