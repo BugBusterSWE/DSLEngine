@@ -58,14 +58,15 @@ DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errb
 		return;
 	}
 
-	var collections = [];
-	var registerCollection = function(coll) {
-		collections.push(coll);
+	var models = [];
+
+	var registerModel = function (dsl) {
+		models.push(dsl);
 	};
 
 	try {
 		vm.runInNewContext(out.code, {
-			registerCollection: registerCollection,
+			registerModel: registerModel,
 			require: require,
 			DslCollectionModel: DslCollectionModel,
 			IndexModel: IndexModel,
@@ -79,7 +80,7 @@ DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errb
 		return;
 	}
 
-	callback(collections);
+	callback(models);
 };
 
 module.exports = DslConcreteStrategy;
