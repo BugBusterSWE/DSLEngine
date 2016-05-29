@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var DslDomain = require("./model/DslDomain.js");
+var AccessModel = require("./model/AccessModel.js");
 var MaapError = require("./utils/MaapError.js");
 
 /**
@@ -16,7 +17,8 @@ var MaapError = require("./utils/MaapError.js");
  * @license MIT
  */
 var DSLEngine = function () {
-    this.domain = undefined;
+    this.domain = new DslDomain();
+	this.db = undefined;
 };
 
 /**
@@ -37,29 +39,29 @@ DSLEngine.prototype.connectTo = function (database) {
     var self = this;
 
     return new Promise((resolve, reject) => {
-	if (self.domain === undefined) {
-	    var connection = mongoose.createConnection(
-		`mongodb://${database}`
-	    );
+		if (self.connection === undefined) {
+			var connection = mongoose.createConnection(
+				`mongodb://${database}`
+			);
 
-	    connection.on("error", function(err) {
-		reject(err);
-	    });
+			connection.on("error", function(err) {
+				reject(err);
+			});
 
-	    connection.on("open", function(ref) {
-		// Error to read the macro
-		try {
-		    // Use the connection to perform the DSL
-		    self.domain = new DslDomain(connection);
-		} catch (err) {
-		    reject(err);
-		}
+			connection.on("open", function(ref) {
+				// Error to read the macro
+				try {
+					// Use the connection to perform the DSL
+					self.db = connection;
+				} catch (err) {
+					reject(err);
+				}
 		
-		resolve(ref);
-	    });
-	} else { 
-	    resolve();
-	}
+				resolve(ref);
+			});
+		} else { 
+			resolve();
+		}
     });
 };
 
@@ -72,8 +74,8 @@ DSLEngine.prototype.connectTo = function (database) {
  * @throws {MaaPError}
  */
 DSLEngine.prototype.connectWith = function (connection) {
-    if (this.domain === undefined) {
-	this.domain = new DslDomain(connection);
+    if (this.db === undefined) {
+		this.db = connection;
     }
 };
 
@@ -86,39 +88,27 @@ DSLEngine.prototype.connectWith = function (connection) {
  */
 DSLEngine.prototype.loadDSL = function (dsl) {
     return new Promise((resolve, reject) => {
-	this.domain.loadDSL(dsl, (err, ids) => {
-	    if (err) {
-		reject(err);
-	    } else {
-		resolve(ids);
-	    }
-	});
+		this.domain.loadDSL(dsl, (err, ids) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(ids);
+			}
+		});
     });
 };
 
-/**
- * @description 
- * Return the summary of any collections loaded in the engine.
- * @return {Array<Object>}
- * The summary object have three attributs:
- * * id: Id of the collection
- * * name: Name of the collection
- * * label: Label of the collection
+/** 
+ * @description
+ * Get the access point to take the engine specified in the argument.
+ * @param typeDSL {Engine}
+ * Type of engine that you want the access
+ * @return {AccessPoint}
+ * The access point to the Engine specified.
  */
-DSLEngine.prototype.getCollections = function () {
-    var models = this.domain.getCollectionModels();
-    var collections = [];
-
-    models.forEach((model) => {
-	collections.push({
-	    id: model.getId(),
-	    name: model.getName(),
-	    label: model.getLabel()
-	});
-    });
-
-    return collections;
-};
+DSLEngine.prototype.get = function (typeDSL) {
+	return new AccessModel(this, this.domain, typeDSL);
+}
 
 /**
  * @description
@@ -139,22 +129,22 @@ DSLEngine.prototype.getIndexPage = function (id, option) {
     var collection = this.domain.getCollectionModel(id);
     
     return new Promise((resolve, reject) => {
-	if (collection) {
-	    var indexModel = collection.getIndexModel();
-	    indexModel.getData(
-		option.page,
-		option.sort,
-		option.order,
-		(data) => {
-		    resolve(data);
-		},
-		(err) => {
-		    reject(err);
+		if (collection) {
+			var indexModel = collection.getIndexModel();
+			indexModel.getData(
+				option.page,
+				option.sort,
+				option.order,
+				(data) => {
+					resolve(data);
+				},
+				(err) => {
+					reject(err);
+				}
+			);
+		} else {
+			reject(new MaapError(7000));
 		}
-	    );
-	} else {
-	    reject(new MaapError(7000));
-	}
     });
 };
 
@@ -173,20 +163,20 @@ DSLEngine.prototype.getShowPage = function (collectionId, documentId) {
     var collection = this.domain.getCollectionModel(collectionId);
     
     return new Promise((resolve, reject) => {
-	if (!collection) {
-	    reject(new MaapError(18000));
-	} else {
-	    var showModel = collection.getShowModel();
-	    showModel.getData(
-		documentId,
-		(data) => {
-		    resolve(data);
-		},
-		(error) => {
-		    reject(error);
+		if (!collection) {
+			reject(new MaapError(18000));
+		} else {
+			var showModel = collection.getShowModel();
+			showModel.getData(
+				documentId,
+				(data) => {
+					resolve(data);
+				},
+				(error) => {
+					reject(error);
+				}
+			);
 		}
-	    );
-	}
     });
 };
 
