@@ -9,19 +9,47 @@
 
     export class DSLEngine {
         constructor();
-        // Da trovare nella documentazione di MongoDB
         connectTo(database : string) : Promise<Object>;
         connectWith(connection : mongoose.Connection) : void;
-        loadDSL(dsl : string) : void;
+        loadDSL(dsl : string) : Promise<Record[]>;
+        /*
         getCollections() : Promise<Collection[]>;
         getIndexPage(id : string, option : OptionDisplayIndexPage) : Promise<IndexPage>;
         getShowPage(collectionId : string, documentId : string) : Promise<Document[]>;
         deleteDocument(collectionId : string, documentId : string) : Promise<void>;
-        // Che sia da templetizzare? Il punto è che l'Object è la struttura
-        // comune ad ogni interrogazione MongoDB. E' come la struttura a
-        // tabelle per SQL.
         editDocument(collectionId : string, documentId : string, content : Object) : Promise<Object>;
+        */
+        get(engine : Engine) : AccessModel;
     }
+    
+    export enum Engine {
+        Cell = "Cell",
+        Collection = "Collection",
+        Document = "Document",
+        Dashboard = "Dashboard"    
+    }
+
+    export interface Record {
+        token : Token;        
+        type : Engine;
+    }    
+
+    export interface Token {}
+ 
+    export interface AccessModel {
+        by<T extends ModelEngine>(token : Token) : T;
+        all<T extends ModelEngine>() : T;
+    }
+
+    export interface ModelEngine {}
+
+    export interface CellEngine extends ModelEngine {}
+    export interface CollectionEngine extends ModelEngine {}
+    export interface ColumnEngine extends ModelEngine {}
+    export interface DashboardEngine extends ModelEngine {}
+    export interface DocumentEngine extends ModelEngine {}
+    export interface IndexEngine extends ModelEngine {}
+    export interface RowEngine extends RowEngine {}
     
     export interface Collection {
     	id : string;
