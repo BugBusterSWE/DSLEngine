@@ -15,7 +15,7 @@
 
 "use strict";
 
-var DslCollectionModel = require("../../src/model/DslCollectionModel.js");
+var DslCollectionModel = require("../../src/model/CollectionModel.js");
 var MaapError = require("../../src/utils/MaapError.js");
 var assert = require('assert');
 
