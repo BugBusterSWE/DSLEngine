@@ -28,7 +28,6 @@ var DslConcreteStrategy = require("./DslConcreteStrategy");
 var MaapError = require("../utils/MaapError.js");
 
 var _prefix = "_id";
-var engine = new Engine(); //FIXME: Engine is not defined
 
 var DslDomain = function() {
     this.modelRegistry = {};
