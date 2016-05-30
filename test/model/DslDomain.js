@@ -7,6 +7,12 @@
 * 
 * Version         Date           Programmer
 * =================================================
+* 0.0.1          2016-05-30     Polonio Davide
+* -------------------------------------------------
+* Rimossi metodi non utilizzati
+* Rinominato registerCollection in register
+*
+* =================================================
 * 0.0.1          2014-03-02     Serena Girardi
 * -------------------------------------------------
 * Codifica test.
@@ -41,8 +47,8 @@ describe("DslDomain", function() {
 			done();
 		});
 
-		it("Ha un metodo registerCollection", function(done) {
-			assert.notEqual(domain.registerCollection, null);
+		it("Ha un metodo register", function(done) {
+			assert.notEqual(domain.register, null);
 			done();
 		});
 
@@ -144,7 +150,7 @@ describe("DslDomain", function() {
 
 	*/
 
-	describe("registerCollection() TU-14", function() {
+	describe("register() TU-14", function() {
 
 		it("Aggiunge una collection al registro", function (done) {
 
@@ -176,7 +182,7 @@ describe("DslDomain", function() {
 
 			StubClass.registerError = function (err) {};
 
-			StubClass.registerCollection = domain.registerCollection;
+			StubClass.registerCollection = domain.register;
 
 			StubClass.registerCollection(model);
 
@@ -214,7 +220,7 @@ describe("DslDomain", function() {
 				assert.deepEqual(err, new MaapError(3001, "The collection 'name' with id '0' is defined multiple times"));
 			};
 
-			StubClass.registerCollection = domain.registerCollection;
+			StubClass.registerCollection = domain.register;
 
 			StubClass.registerCollection(model);
 
