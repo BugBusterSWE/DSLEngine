@@ -28,7 +28,7 @@ var fs = require("fs");
 var MaapError = require("../utils/MaapError.js");
 var vm = require("vm");
 
-var DslCollectionModel = require("./DslCollectionModel");
+var CollectionModel = require("./CollectionModel");
 var IndexModel = require("./IndexModel");
 var ShowModel = require("./ShowModel");
 var Row = require("./Row");
@@ -68,7 +68,7 @@ DslConcreteStrategy.prototype.loadDSL = function(content, callback, errback) {
 		vm.runInNewContext(out.code, {
 			registerModel: registerModel,
 			require: require,
-			DslCollectionModel: DslCollectionModel,
+			CollectionModel: CollectionModel,
 			IndexModel: IndexModel,
 			ShowModel: ShowModel,
 			Row: Row,
