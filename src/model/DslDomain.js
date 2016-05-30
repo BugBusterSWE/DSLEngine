@@ -95,4 +95,4 @@ DslDomain.prototype.getCollectionModels = function() {
 	return models;
 };
 
-module.exports = DslDomain;db
+module.exports = DslDomain;
