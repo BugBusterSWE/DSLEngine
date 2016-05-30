@@ -69,30 +69,4 @@ DslDomain.prototype.getAll = function() {
 	return this.modelRegistry;
 };
 
-
-var compareCollectionWeight = function(a, b) {
-	var aw = a.getWeight();
-	var bw = b.getWeight();
-	if (aw < bw) {
-		return -1;
-	}
-	if (aw > bw) {
-		return 1;
-	}
-	return 0;
-};
-
-DslDomain.prototype.getCollectionModels = function() {
-	var models = [];
-
-	for (var id in this.modelRegistry) {
-		if (this.modelRegistry.hasOwnProperty(id)) {
-			models.push(this.modelRegistry[id]);
-		}
-	}
-	models.sort(compareCollectionWeight);
-	
-	return models;
-};
-
 module.exports = DslDomain;
