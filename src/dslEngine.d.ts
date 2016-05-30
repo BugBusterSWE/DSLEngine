@@ -12,13 +12,6 @@
         connectTo(database : string) : Promise<Object>;
         connectWith(connection : mongoose.Connection) : void;
         loadDSL(dsl : string) : Promise<Record[]>;
-        /*
-        getCollections() : Promise<Collection[]>;
-        getIndexPage(id : string, option : OptionDisplayIndexPage) : Promise<IndexPage>;
-        getShowPage(collectionId : string, documentId : string) : Promise<Document[]>;
-        deleteDocument(collectionId : string, documentId : string) : Promise<void>;
-        editDocument(collectionId : string, documentId : string, content : Object) : Promise<Object>;
-        */
         get(engine : Engine) : AccessModel;
     }
     
@@ -44,12 +37,18 @@
     export interface ModelEngine {}
 
     export interface CellEngine extends ModelEngine {}
-    export interface CollectionEngine extends ModelEngine {}
-    export interface ColumnEngine extends ModelEngine {}
+
+    export interface CollectionEngine extends ModelEngine {
+        deleteDocument(collectionId : string, documentId : string) : Promise<void>;
+        editDocument(collectionId : string, documentId : string, content : Object) : Promise<Object>;
+        getIndexPage(id : string, option : OptionDisplayIndexPage) : Promise<IndexPage>;
+        getShowPage(collectionId : string, documentId : string) : Promise<Document[]>;
+        list() : Promise<Collection[]>;
+    }
+    
     export interface DashboardEngine extends ModelEngine {}
+
     export interface DocumentEngine extends ModelEngine {}
-    export interface IndexEngine extends ModelEngine {}
-    export interface RowEngine extends RowEngine {}
     
     export interface Collection {
     	id : string;
