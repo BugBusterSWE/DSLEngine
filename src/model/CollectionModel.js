@@ -64,44 +64,45 @@ var CollectionModel = function(params) {
 	};
 };
 
-DslConnectionModel.prototype.bind = function(db) {
+CollectionModel.prototype.bind = function(db) {
 	this.docModel = db.model(this.name, DocumentSchema);
 };
 
-DslCollectionModel.prototype.getId = function() {
+CollectionModel.prototype.getId = function() {
 	return this.id;
 };
 
-DslCollectionModel.prototype.getName = function() {
+CollectionModel.prototype.getName = function() {
 	return this.name;
 };
 
-DslCollectionModel.prototype.getLabel = function() {
+CollectionModel.prototype.getLabel = function() {
 	return this.label;
 };
 
-DslCollectionModel.prototype.getWeight = function() {
+CollectionModel.prototype.getWeight = function() {
 	return this.weight;
 };
 
-DslCollectionModel.prototype.getIndexModel = function() {
+CollectionModel.prototype.getIndexModel = function() {
 	return this.indexModel;
 };
 
-DslCollectionModel.prototype.getShowModel = function() {
+CollectionModel.prototype.getShowModel = function() {
 	return this.showModel;
 };
 
-DslCollectionModel.prototype.setIndexModel = function(indexModel) {
+CollectionModel.prototype.setIndexModel = function(indexModel) {
 	this.indexModel = indexModel;
 };
 
-DslCollectionModel.prototype.setShowModel = function(showModel) {
+CollectionModel.prototype.setShowModel = function(showModel) {
 	this.showModel = showModel;
 };
 
-DslCollectionModel.prototype.toString = function() {
+CollectionModel.prototype.toString = function() {
 	return this.getName();
 };
 
-module.exports = DslCollectionModel;
+module.exports = CollectionModel;
+
