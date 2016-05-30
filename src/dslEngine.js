@@ -107,7 +107,7 @@ DSLEngine.prototype.loadDSL = function (dsl) {
  * The access point to the Engine specified.
  */
 DSLEngine.prototype.get = function (typeDSL) {
-	return new AccessModel(this, this.domain, typeDSL);
+	return new AccessModel(this.db, this.domain, typeDSL);
 }
 
 /**
