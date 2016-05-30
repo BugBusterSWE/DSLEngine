@@ -5,10 +5,10 @@ var AccessModel = function (db, domain, typeDSL) {
     this.domain = domain;
     this.typeDSL = typeDSL;
     this.engine = {
-        CellModel: CellEngine,
-        CollectionModel: CollectionEngine,
-        DocumentModel: DocumentEngine,
-        DashboardModel: DashboardEngine
+        // CellModel: CellEngine,
+        CollectionModel: CollectionEngine
+        // DocumentModel: DocumentEngine,
+        // DashboardModel: DashboardEngine
     };
 
     this.getEngine = (model) => {
