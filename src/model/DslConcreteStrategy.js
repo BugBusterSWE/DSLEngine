@@ -46,7 +46,7 @@ var DslConcreteStrategy = function() {
 	}
 };
 
-DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errback) {
+DslConcreteStrategy.prototype.loadDSL = function(content, callback, errback) {
 	// Inject the macro syntax into the content
 	content = `${this.cachedMacro}\n\n${content}`;
 
@@ -72,8 +72,7 @@ DslConcreteStrategy.prototype.loadDSL = function(content, domain, callback, errb
 			IndexModel: IndexModel,
 			ShowModel: ShowModel,
 			Row: Row,
-			Column: Column,
-			domain: domain
+			Column: Column
 		});
 	} catch(err) {
 		errback(new MaapError(err));

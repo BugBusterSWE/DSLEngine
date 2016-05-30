@@ -37,7 +37,7 @@ var DslDomain = function() {
 
 DslDomain.prototype.loadDSL = function(data, callback) {
     var self = this;
-    self.strategy.loadDSL(data, self, function(models) {
+    self.strategy.loadDSL(data, function(models) {
 		var ids = []
 
 		models.forEach(function(model) {
