@@ -26,7 +26,7 @@ var IndexModel = require("./IndexModel");
 var MaapError = require("../utils/MaapError");
 
 
-var DslCollectionModel = function(params) {
+var CollectionModel = function(params) {
 	var self = this;
 	
 	// Valori di default
