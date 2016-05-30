@@ -1,12 +1,14 @@
+var CollectionEngine = require("../engine/CollectionEngine.js");
+
 var AccessModel = function (db, domain, typeDSL) {
     this.db = db;    
     this.domain = domain;
     this.typeDSL = typeDSL;
     this.engine = {
-        Cell: CellEngine,
-        Collection: CollectionEngine,
-        Document: DocumentEngine,
-        Dashboard: DashboardEngine
+        CellModel: CellEngine,
+        CollectionModel: CollectionEngine,
+        DocumentModel: DocumentEngine,
+        DashboardModel: DashboardEngine
     };
 
     this.getEngine = (model) => {
