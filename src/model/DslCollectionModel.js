@@ -26,9 +26,8 @@ var IndexModel = require("./IndexModel");
 var MaapError = require("../utils/MaapError");
 
 
-var DslCollectionModel = function(dslDomain, params) {
+var DslCollectionModel = function(params) {
 	var self = this;
-	this.dslDomain = dslDomain;
 	
 	// Valori di default
 	this.weight = 0;
@@ -62,9 +61,11 @@ var DslCollectionModel = function(dslDomain, params) {
 	// Verifiche
 	if (!this.id.match( /^[a-z0-9-]+$/i )) {
 		throw new MaapError(8001, "The collection id '"+this.id+"' must contain only alphabetic characters, digits and minus. It can not be empty");
-	}
-	
-	this.docModel = this.dslDomain.db.model(this.name, DocumentSchema);
+	};
+};
+
+DslConnectionModel.prototype.bind = function(db) {
+	this.docModel = db.model(this.name, DocumentSchema);
 };
 
 DslCollectionModel.prototype.getId = function() {

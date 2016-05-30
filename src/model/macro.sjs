@@ -114,7 +114,7 @@ syntax collection = function (ctx) {
         paramCtx.next();
     }
      
-    let result = #`_collection = new DslCollectionModel(domain, {${param}}) registerCollection(_collection)`;
+    let result = #`_collection = new DslCollectionModel({${param}}) registerCollection(_collection)`;
      
     // Get all structure
     for (let btx of bodyCtx) {

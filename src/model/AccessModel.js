@@ -1,5 +1,5 @@
-var AccessModel = function (dslEngine, domain, typeDSL) {
-    this.dslEngine = dslEngine;    
+var AccessModel = function (db, domain, typeDSL) {
+    this.db = db;    
     this.domain = domain;
     this.typeDSL = typeDSL;
     this.engine = {
@@ -10,7 +10,8 @@ var AccessModel = function (dslEngine, domain, typeDSL) {
     };
 
     this.getEngine = (model) => {
-        return new engine[this.typeDSL](this.dslEngine, model);
+        model.bind(db);
+        return new engine[this.typeDSL](model);
     };
 }
 
