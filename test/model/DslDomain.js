@@ -50,11 +50,6 @@ describe("DslDomain", function() {
 			assert.notEqual(domain.getCollectionModel, null);
 			done();
 		});
-
-		it("Ha un metodo getErrors", function(done) {
-			assert.notEqual(domain.getErrors, null);
-			done();
-		});
 	});
 
 	/*
