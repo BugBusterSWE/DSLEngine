@@ -1,4 +1,4 @@
-var engine = require("../");
+/*var engine = require("../");
 var chai = require('chai')
 chai.use(require('chai-as-promised'));
 
@@ -18,3 +18,4 @@ describe("Initialize", () => {
 	});
     });
 });
+*/
