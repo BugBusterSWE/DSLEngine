@@ -7,6 +7,10 @@
 * 
 * Version         Date           Programmer
 * =================================================
+* 0.0.1          2016-05-30     Davide Polonio
+* -------------------------------------------------
+* Corretto typo. Trovato errore in `new Engine()`
+* =================================================
 * 0.0.1          2016-05-11     Andrea Mantovani
 * -------------------------------------------------
 * Rimosso metodo init
@@ -24,7 +28,7 @@ var DslConcreteStrategy = require("./DslConcreteStrategy");
 var MaapError = require("../utils/MaapError.js");
 
 var _prefix = "_id";
-var engine = new Engine();
+var engine = new Engine(); //FIXME: Engine is not defined
 
 var DslDomain = function() {
     this.modelRegistry = {};
@@ -54,7 +58,7 @@ DslDomain.prototype.register = function(model) {
     
     return {
 		token: idc,
-		type: model.constructor.name;
+		type: model.constructor.name
 	};
 };
 
