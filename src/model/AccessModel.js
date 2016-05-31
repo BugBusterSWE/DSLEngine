@@ -12,8 +12,7 @@ var AccessModel = function (db, domain, typeDSL) {
     };
 
     this.getEngine = (model) => {
-        model.bind(db);
-        return new engine[this.typeDSL](model);
+        return new engine[this.typeDSL](db, model);
     };
 }
 

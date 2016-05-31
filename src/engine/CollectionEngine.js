@@ -1,3 +1,5 @@
+var DocumentSchema = require("./DocumentSchema");
+
 var compareCollectionWeight = function(a, b) {
 	var aw = a.getWeight();
 	var bw = b.getWeight();
@@ -11,7 +13,7 @@ var compareCollectionWeight = function(a, b) {
 	return 0;
 };
 
-var CollectionEngine = function (models) {
+var CollectionEngine = function (db, models) {
     this.registry = [];
 
     var buff = [];
@@ -19,6 +21,7 @@ var CollectionEngine = function (models) {
     buff.push(models);
 
     buff.forEach((model) => {
+	model.bind(db.model(model.getName(), DocumentSchema)); 
         this.registry[model.getId()] = model;
     });
 };
