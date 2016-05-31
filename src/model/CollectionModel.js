@@ -20,7 +20,6 @@
 "use strict";
 
 var AttributeReader = require("../utils/AttributeReader");
-var DocumentSchema = require("./DocumentSchema");
 var ShowModel = require("./ShowModel");
 var IndexModel = require("./IndexModel");
 var MaapError = require("../utils/MaapError");
@@ -64,8 +63,10 @@ var CollectionModel = function(params) {
 	};
 };
 
-CollectionModel.prototype.bind = function(db) {
-	this.docModel = db.model(this.name, DocumentSchema);
+CollectionModel.prototype.bind = function(model) {
+	this.docModel = model;
+	this.showModel.bind(this.docModel);
+	this.indexModel.bind(this.docModel);
 };
 
 CollectionModel.prototype.getId = function() {

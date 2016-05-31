@@ -20,23 +20,32 @@ var Row = require("./Row");
 var MaapError = require("../utils/MaapError");
 var ObjectUtils = require("./ObjectUtils");
 
-var ShowModel = function(collectionModel, params) {
+var ShowModel = function(params, collectionModel) {
 	var self = this;
-	this.collectionModel = collectionModel;
+	
 	this.attributes = [];
+	this.docModel = undefined;
+
+	this.name = (collectionModel) ? collectionModel.getName() : undefined;
 
 	// Leggi i parametri obbligatori e opzionali
-	AttributeReader.readRequiredAttributes(params, this, [], function(param){
-		throw new MaapError(13000, "Required parameter '" + param + "' in collection '" + self.collectionModel.toString() + "', show");
+	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
+		throw new MaapError(13000, "Required parameter '" + param + "' in collection '" + self.name + "', show");
 	});
 
 	AttributeReader.readOptionalAttributes(params, this, ["populate"]);
 	AttributeReader.assertEmptyAttributes(params, function(param){
-		throw new MaapError(13000, "Unexpected parameter '" + param + "' in collection '" + self.collectionModel.toString() + "', show");
+		throw new MaapError(13000, "Unexpected parameter '" + param + "' in collection '" + self.name + "', show");
 	});
 
-    this.noMoreRows();
+    	this.noMoreRows();
 };
+
+
+ShowModel.prototype.bind = function (model) {
+	this.docModel = model;
+};
+
 
 ShowModel.prototype.addRow = function(attribute) {
 	this.attributes.push(attribute);
@@ -94,9 +103,8 @@ var formatDocument = function(document, attributes) {
 
 ShowModel.prototype.getData = function(documentId, callback, errback) {
 	var self = this;
-	var model = self.collectionModel.docModel;
-
-	model.findByIdAndPopulate(
+	
+	this.docModel.findByIdAndPopulate(
 		documentId,
 		this.populate,
 		function success(result) {
@@ -110,9 +118,7 @@ ShowModel.prototype.getData = function(documentId, callback, errback) {
 };
 
 ShowModel.prototype.deleteDocument = function(documentId, callback, errback) {
-	var model = this.collectionModel.docModel;
-
-	model.safeFindByIdAndRemove(
+	this.docModel.safeFindByIdAndRemove(
 		documentId,
 		callback,
 		errback
@@ -121,9 +127,8 @@ ShowModel.prototype.deleteDocument = function(documentId, callback, errback) {
 
 ShowModel.prototype.updateDocument = function(documentId, documentUpdated, callback, errback) {
 	var self = this;
-	var model = this.collectionModel.docModel;
-	
-	model.safeFindById(
+
+	this.docModel.safeFindById(
 		documentId,
 		function success(result) {
 			result.upsert(
@@ -142,3 +147,4 @@ ShowModel.prototype.updateDocument = function(documentId, documentUpdated, callb
 };
 
 module.exports = ShowModel;
+

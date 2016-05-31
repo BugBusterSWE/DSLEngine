@@ -23,6 +23,7 @@ var ObjectUtils = require("./ObjectUtils");
 var IndexModel = function(collectionModel, params) {
 	var self = this;
 	this.collectionModel = collectionModel;
+	this.docModel = undefined;
 	this.attributes = [];
 
 	// Valori di default
@@ -58,6 +59,10 @@ var IndexModel = function(collectionModel, params) {
 	}
 
     this.noMoreColumns();
+};
+
+IndexModel.prototype.bind = function (model) {
+	this.docModel = model;
 };
 
 IndexModel.prototype.addColumn = function(attribute) {
@@ -170,7 +175,7 @@ var formatDocument = function(document, attributes) {
 
 IndexModel.prototype.getData = function(page, sortBy, order, callback, errback) {
 	var self = this;
-	var model = this.collectionModel.docModel;
+	var model = this.docModel;
 	
 	if (!page) {
 		page = 1;
