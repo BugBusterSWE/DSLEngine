@@ -18,6 +18,26 @@ syntax row = function (ctx) {
     return result;
 }
 
+syntax rowDoc = function (ctx) {
+    // The content of the parens in a collection
+    let paramCtx = ctx.next().value.inner();
+      
+    let result = #``;
+    
+    // Get all params
+    for (let ptx of paramCtx) {
+        // Eat ':'
+        paramCtx.next();
+        result = result.concat(#`${ptx}: ${paramCtx.next('expr').value}`);
+        // Eat ','
+        paramCtx.next();
+    }
+    
+    result = #`var _row = new Row(_document, {${result}}) _document.addRow(_row)`;
+     
+    return result;
+}
+
 syntax column = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
@@ -37,7 +57,7 @@ syntax column = function (ctx) {
      
     return result;
 }
- 
+
 syntax show = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
@@ -55,7 +75,7 @@ syntax show = function (ctx) {
         paramCtx.next();
     }
      
-    result = #`_show = new ShowModel(_collection, {${result}}) _collection.setShowModel(_show)`;
+    result = #`_show = new ShowModel({${result}}, _collection) _collection.setShowModel(_show)`;
      
     // Get all structures
     for (let btx of bodyCtx) {
@@ -97,6 +117,35 @@ syntax index = function (ctx) {
     return result;
 }
  
+syntax document = function (ctx) {
+    // The content of the parens in a collection
+    let paramCtx = ctx.next().value.inner();
+    // The content of the braces in a collection
+    let bodyCtx = ctx.next().value.inner();
+      
+    let result = #``;
+     
+    // Get all params
+    for (let ptx of paramCtx) {
+        // Eat ':'
+        paramCtx.next();
+        result = result.concat(#`${ptx}: ${paramCtx.next('expr').value}`);
+        // Eat ','
+        paramCtx.next();
+    }
+     
+    result = #`_document = new ShowModel({${result}}) register(_document)`;
+     
+    // Get all structures
+    for (let btx of bodyCtx) {
+        if (btx.isIdentifier('row')) {
+            result = result.concat(#`rowDoc ${bodyCtx.next().value}`);
+        }
+    }
+     
+    return result;
+}
+
 syntax collection = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
@@ -114,7 +163,7 @@ syntax collection = function (ctx) {
         paramCtx.next();
     }
      
-    let result = #`_collection = new DslCollectionModel({${param}}) registerCollection(_collection)`;
+    let result = #`_collection = new CollectionModel({${param}}) registerModel(_collection)`;
      
     // Get all structure
     for (let btx of bodyCtx) {
@@ -131,6 +180,7 @@ syntax collection = function (ctx) {
 
 
 var _collection;
+var _document;
 var _index;
 var _show;
 
