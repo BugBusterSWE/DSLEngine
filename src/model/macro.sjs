@@ -178,9 +178,42 @@ syntax collection = function (ctx) {
     return result;
 }
 
+syntax cell = function (ctx) {
+    // The content of the parens in a collection
+    let paramCtx = ctx.next().value.inner();
+    // The content of the braces in a collection
+    let bodyCtx = ctx.next().value.inner();
+    
+    let param = #``;
+    
+    // Get all params
+    for (let ptx of paramCtx) {
+        // Eat ':'
+        paramCtx.next();
+        param = param.concat(#`${ptx}: ${paramCtx.next('expr').value}`);
+        // Eat ','
+        paramCtx.next();
+    }
+    
+    let result = #`_cell = new Cell({${param}}) registerModel(_cell)`;
+    
+    let value = #``;
+    
+    for (let btx of bodyCtx) {
+       if (btx.isIdentifier()) {
+            bodyCtx.next();
+            value = value.concat(#`${btx}: ${bodyCtx.next().value}`);
+            bodyCtx.next();
+       }
+    }
+    
+    return result.concat(#`_cell.set({${value}})`);
+}
 
 var _collection;
 var _document;
 var _index;
 var _show;
+var _cell;
+
 

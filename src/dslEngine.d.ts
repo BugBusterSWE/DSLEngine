@@ -48,7 +48,11 @@
     
     export interface DashboardEngine extends ModelEngine {}
 
-    export interface DocumentEngine extends ModelEngine {}
+    export interface DocumentEngine extends ModelEngine {
+	deleteDocument(documentId : string) : Promise<void>;
+        editDocument(documentId : string, content : Object) : Promise<Object>;
+        getShowPage(documentId : string) : Promise<Document[]>;
+    }
     
     export interface Collection {
     	id : string;
