@@ -1,7 +1,8 @@
 var mongoose = require("mongoose");
-var DslDomain = require("./model/DslDomain.js");
-var AccessModel = require("./model/AccessModel.js");
+var DslConcreteStrategy = require("./model/DslConcreteStrategy");
 var MaapError = require("./utils/MaapError.js");
+var Token = require("./token.js");
+var NoConnectionEstabilished = require("./utils/noConnecionEstabilished.js");
 
 /**
  * Core class, it keep manage the connesion with MongoDB and run the DSL passed 
@@ -10,6 +11,7 @@ var MaapError = require("./utils/MaapError.js");
  * @history
  * | Name | Action performed | Date |
  * | ---  | ---              | ---  |
+ * | Andrea Mantovani | Uso Token and remove method get | 2016-06-01 |
  * | Andrea Mantovani | Update document and correct import | 2016-05-12 |
  * | Andrea Mantovani | Create class | 2016-05-11 |
  * 
@@ -17,8 +19,24 @@ var MaapError = require("./utils/MaapError.js");
  * @license MIT
  */
 var DSLEngine = function () {
-    this.domain = new DslDomain();
+    this.strategy = new DslConcreteStrategy();
 	this.db = undefined;
+};
+
+/**
+ * @description
+ * Create a ready token to comunicate with the engine. The DSLEngine to must connect
+ * with a db to create the token, otherwise the NoConnectionEstabilished exception is 
+ * throw.
+ * @return {Token}
+ * A token connected with this engine.
+ */
+DSLEngine.prototype.createToken = function () {
+	if (this.db === undefined) {
+		throw new NoConnectionEstabilished();	
+	}
+
+	return new Token(this);
 };
 
 /**
@@ -81,34 +99,23 @@ DSLEngine.prototype.connectWith = function (connection) {
 
 /**
  * @description
- * Load the dsl into the engine to codifing it.
+ * Load the dsl into the token passed by argument. Use this method if you want load new dsl 
+ * model in a previous token.
  * @param dsl {string}
  * The code of the dsl
- * @throws {MaaPError[]}
+ * @param token {Token} 
+ * The token where to be store the dsl. 
+ * @return {Token}
+ * The token with the models loaded within his. If no token is passed, the DSLEngine 
+ * will create a new token with the model loaded.
+ * @throws {MaaPError}
  */
-DSLEngine.prototype.loadDSL = function (dsl) {
-    return new Promise((resolve, reject) => {
-		this.domain.loadDSL(dsl, (err, ids) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(ids);
-			}
-		});
-    });
-};
+DSLEngine.prototype.loadDSL = function (dsl, token) {
+	token = token || this.createToken();
+    token.registry(this.strategy.load(dsl));
 
-/** 
- * @description
- * Get the access point to take the engine specified in the argument.
- * @param typeDSL {Engine}
- * Type of engine that you want the access
- * @return {AccessPoint}
- * The access point to the Engine specified.
- */
-DSLEngine.prototype.get = function (typeDSL) {
-	return new AccessModel(this.db, this.domain, typeDSL);
-}
+	return token;
+};
 
 module.exports = DSLEngine;
 
