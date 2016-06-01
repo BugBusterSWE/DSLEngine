@@ -46,7 +46,7 @@ var DslConcreteStrategy = function() {
 	}
 };
 
-DslConcreteStrategy.prototype.loadDSL = function(content, callback, errback) {
+DslConcreteStrategy.prototype.load = function(content) {
 	// Inject the macro syntax into the content
 	content = `${this.cachedMacro}\n\n${content}`;
 
@@ -75,11 +75,10 @@ DslConcreteStrategy.prototype.loadDSL = function(content, callback, errback) {
 			Column: Column
 		});
 	} catch(err) {
-		errback(new MaapError(err));
-		return;
+		throw new MaapError(err);
 	}
 
-	callback(models);
+	return models;
 };
 
 module.exports = DslConcreteStrategy;
