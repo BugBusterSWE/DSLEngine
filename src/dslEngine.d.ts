@@ -9,36 +9,22 @@
 
     export class DSLEngine {
         constructor();
+
+        createToken() : Token;
         connectTo(database : string) : Promise<Object>;
         connectWith(connection : mongoose.Connection) : void;
-        loadDSL(dsl : string) : Promise<Record[]>;
-        get(engine : Engine) : AccessModel;
+        loadDSL(dsl : string, token? : Token) : Token;
     }
-    
-    export enum Engine {
-        Cell = "Cell",
-        Collection = "Collection",
-        Document = "Document",
-        Dashboard = "Dashboard"    
-    }
-
-    export interface Record {
-        token : Token;        
-        type : Engine;
-    }    
 
     export interface Token {}
- 
-    export interface AccessModel {
-        by<T extends ModelEngine>(token : Token) : T;
-        all<T extends ModelEngine>() : T;
-    }
 
     export interface ModelEngine {}
 
-    export interface CellEngine extends ModelEngine {}
+    export class CellEngine implements ModelEngine {}
 
-    export interface CollectionEngine extends ModelEngine {
+    export class CollectionEngine implements ModelEngine {
+        constructor(token : Token);
+
         deleteDocument(collectionId : string, documentId : string) : Promise<void>;
         editDocument(collectionId : string, documentId : string, content : Object) : Promise<Object>;
         getIndexPage(id : string, option : OptionDisplayIndexPage) : Promise<IndexPage>;
@@ -46,10 +32,12 @@
         list() : Promise<Collection[]>;
     }
     
-    export interface DashboardEngine extends ModelEngine {}
+    export class DashboardEngine implements ModelEngine {}
 
-    export interface DocumentEngine extends ModelEngine {
-	deleteDocument(documentId : string) : Promise<void>;
+    export interface DocumentEngine implements ModelEngine {
+        constructor(token : Token);
+
+	    deleteDocument(documentId : string) : Promise<void>;
         editDocument(documentId : string, content : Object) : Promise<Object>;
         getShowPage(documentId : string) : Promise<Document[]>;
     }
