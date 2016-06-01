@@ -105,7 +105,7 @@ syntax index = function (ctx) {
         paramCtx.next();
     }
      
-    result = #`_index = new IndexModel(_collection, {${result}}) _collection.setIndexModel(_index)`;
+    result = #`_index = new IndexModel({${result}}, _collection) _collection.setIndexModel(_index)`;
      
     // Get all structures
     for (let btx of bodyCtx) {
