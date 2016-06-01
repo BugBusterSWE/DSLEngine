@@ -38,14 +38,8 @@ var ShowModel = function(params, collectionModel) {
 		throw new MaapError(13000, "Unexpected parameter '" + param + "' in collection '" + self.name + "', show");
 	});
 
-    	this.noMoreRows();
+    this.noMoreRows();
 };
-
-
-ShowModel.prototype.bind = function (model) {
-	this.docModel = model;
-};
-
 
 ShowModel.prototype.addRow = function(attribute) {
 	this.attributes.push(attribute);
@@ -104,46 +98,52 @@ var formatDocument = function(document, attributes) {
 ShowModel.prototype.getData = function(documentId, callback, errback) {
 	var self = this;
 	
-	this.docModel.findByIdAndPopulate(
-		documentId,
-		this.populate,
-		function success(result) {
-			callback(formatDocument(
-				result.toObject(),
-				self.getRowsForDocument(result.toObject())
-			));
-		},
-		errback
-	);
+	return (model) => {
+		model.findByIdAndPopulate(
+			documentId,
+			self.populate,
+			function success(result) {
+				callback(formatDocument(
+					result.toObject(),
+					self.getRowsForDocument(result.toObject())
+				));
+			},
+			errback
+		);
+	};
 };
 
 ShowModel.prototype.deleteDocument = function(documentId, callback, errback) {
-	this.docModel.safeFindByIdAndRemove(
-		documentId,
-		callback,
-		errback
-	);
+	return (model) => {	
+		model.safeFindByIdAndRemove(
+			documentId,
+			callback,
+			errback
+		);
+	};
 };
 
 ShowModel.prototype.updateDocument = function(documentId, documentUpdated, callback, errback) {
 	var self = this;
-
-	this.docModel.safeFindById(
-		documentId,
-		function success(result) {
-			result.upsert(
-				documentUpdated,
-				function(res) {
-					callback(formatDocument(
-						result.toObject(),
-						self.getRowsForDocument(result.toObject())
-					));
-				},
-				errback
-			);
-		},
-		errback
-	);
+	
+	return (model) => {
+		model.safeFindById(
+			documentId,
+			function success(result) {
+				result.upsert(
+					documentUpdated,
+					function(res) {
+						callback(formatDocument(
+							result.toObject(),
+							self.getRowsForDocument(result.toObject())
+						));
+					},
+					errback
+				);
+			},
+			errback
+		);
+	};
 };
 
 module.exports = ShowModel;

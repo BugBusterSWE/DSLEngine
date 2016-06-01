@@ -20,7 +20,7 @@ var Column = require("./Column");
 var MaapError = require("../utils/MaapError");
 var ObjectUtils = require("./ObjectUtils");
 
-var IndexModel = function(collectionModel, params) {
+var IndexModel = function(params, collectionModel) {
 	var self = this;
 	this.collectionModel = collectionModel;
 	this.docModel = undefined;
@@ -59,10 +59,6 @@ var IndexModel = function(collectionModel, params) {
 	}
 
     this.noMoreColumns();
-};
-
-IndexModel.prototype.bind = function (model) {
-	this.docModel = model;
 };
 
 IndexModel.prototype.addColumn = function(attribute) {
@@ -175,78 +171,79 @@ var formatDocument = function(document, attributes) {
 
 IndexModel.prototype.getData = function(page, sortBy, order, callback, errback) {
 	var self = this;
-	var model = this.docModel;
-	
-	if (!page) {
-		page = 1;
-	}
 
-	var query = model.findAllPaginatedQuery(this.query, this.perpage, page);
-
-	if (!sortBy) {
-		sortBy = this.sortby;
-	}
-	if (!order) {
-		order = this.order;
-	}
-	if (order === "desc") {
-		query.sort("-" + sortBy);
-	} else {
-		query.sort(sortBy);
-	}
-
-	if (this.populate) {
-		if (this.populate instanceof Array) {
-			for (var i=0; i<this.populate.length; i++) {
-				query.populate(this.populate[i]);
-			}
+	return (model) => {
+		if (!page) {
+			page = 1;
 		}
-		else {
-			query.populate(this.populate);
-		} 
-	}
-	
-	query.exec(function(err, _docs) {
-		if (err) {
-			errback(err);
-		}
-		else {
-			var docs = _docs.map(function(x){
-				return x.toObject();
-			});
-			var attributes = self.getColumnsForDocuments(docs);
 
-			var jsonResult = {
-				id: self.collectionModel.getId(),
-				name: self.collectionModel.getName(),
-				label: self.collectionModel.getLabel(),
-				numdocs: 0,
-				perpage: self.perpage,
-				header: formatHeader(attributes),
-				documents: []
-			};
-			
-			for (var i=0; i<docs.length; i++) {
-				var document = docs[i];
-				
-				var docJson = {
-					id: document._id,
-					data: formatDocument(document, attributes)
-				};
-				
-				jsonResult.documents.push(docJson);
-			}
-			
-			model.count(self.query, function(err, count) {
-				if (err) {
-					errback(err);
-				} else {
-					jsonResult.numdocs = count;
-					callback(jsonResult);
+		var query = model.findAllPaginatedQuery(self.query, self.perpage, page);
+
+		if (!sortBy) {
+			sortBy = self.sortby;
+		}
+		if (!order) {
+			order = self.order;
+		}
+		if (order === "desc") {
+			query.sort("-" + sortBy);
+		} else {
+			query.sort(sortBy);
+		}
+
+		if (self.populate) {
+			if (self.populate instanceof Array) {
+				for (var i=0; i<self.populate.length; i++) {
+					query.populate(self.populate[i]);
 				}
-			});
-		}	
-	});
+			}
+			else {
+				query.populate(self.populate);
+			} 
+		}
+	
+		query.exec(function(err, _docs) {
+			if (err) {
+				errback(err);
+			}
+			else {
+				var docs = _docs.map(function(x){
+					return x.toObject();
+				});
+				var attributes = self.getColumnsForDocuments(docs);
+
+				var jsonResult = {
+					id: self.collectionModel.getId(),
+					name: self.collectionModel.getName(),
+					label: self.collectionModel.getLabel(),
+					numdocs: 0,
+					perpage: self.perpage,
+					header: formatHeader(attributes),
+					documents: []
+				};
+			
+				for (var i=0; i<docs.length; i++) {
+					var document = docs[i];
+				
+					var docJson = {
+						id: document._id,
+						data: formatDocument(document, attributes)
+					};
+				
+					jsonResult.documents.push(docJson);
+				}
+			
+				model.count(self.query, function(err, count) {
+					if (err) {
+						errback(err);
+					} else {
+						jsonResult.numdocs = count;
+						callback(jsonResult);
+					}
+				});
+			}	
+		});
+	};
 };
 
 module.exports = IndexModel;

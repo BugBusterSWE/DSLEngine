@@ -62,13 +62,6 @@ var CollectionModel = function(params) {
 		throw new MaapError(8001, "The collection id '"+this.id+"' must contain only alphabetic characters, digits and minus. It can not be empty");
 	};
 };
-
-CollectionModel.prototype.bind = function(model) {
-	this.docModel = model;
-	this.showModel.bind(this.docModel);
-	this.indexModel.bind(this.docModel);
-};
-
 CollectionModel.prototype.getId = function() {
 	return this.id;
 };
