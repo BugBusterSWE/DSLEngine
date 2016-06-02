@@ -1,10 +1,13 @@
 var MaapError = require("./utils/MaapError.js");
+const EventEmitter = require('events');
+const util = require('util');
 
 /**
  * Set dsl's store and point to access at the any engine defined in MaaS.
- * @param engine {DSLEngine}
- * The reference at the engine so when a model will be perform, the token
- * deman the engine for to get the model to run the queries.
+ * Token inherits from EventEmitter. Any engine create own events to
+ * comunicate with the other engines. The only once own event of Token is
+ * "update". The event "update" is emit when the new model to be register
+ * into the token.
  *
  * @history
  * | Name | Action performed | Date |
@@ -14,14 +17,16 @@ var MaapError = require("./utils/MaapError.js");
  * @author Andrea Mantovani
  * @license MIT
  */
-var Token = function (engine) {
-    this.engine = engine;
+var Token = function () {
     this.modelRegistry = [];
-    this.observers = [];
     this.status = {
         model: []    
     };
+
+    EventEmitter.call(this);
 };
+
+util.inherits(Token, EventEmitter);
 
 /**
  * @description
@@ -30,18 +35,6 @@ var Token = function (engine) {
  */
 Token.prototype.extract = function () {
     return this.modelRegistry;
-};
-
-/**
- * @description
- * Update each observer attached at the token send them the new
- * status.
- */
-Token.prototype.notify = function () {
-    // The my implementation of the observer pattern
-    observers.forEach((update) => {
-        update(this.status);
-    });
 };
 
 /**
@@ -55,37 +48,7 @@ Token.prototype.register = function (model) {
     this.modelRegistry.push(model);
 
     this.status.model = model;
-
-    this.notify();
-};
-
-/**
- * @description
- * Registry the observer for send notifies when the state of the
- * token is change
- * @param observer {Function}
- * The callback to do when the notify method is invoked. The observer
- * function accept the param status, a object with the follow attributes:
- * * model {Model[]} 
- * * * The last models loaded by register method
- */
-Token.prototype.subscribe = function (observer) {
-    this.observers.push(observer);
-};
-
-/**
- * @description
- * Remove the registered observer if presents.
- * @observer {Function}
- * Callback that draw the observer
- */
-Token.prototype.unsubscribe = function (observer) {
-    var pos = this.observers.indexOf(observer);
-
-    if (pos > -1) {
-        // Remove observer from array
-        this.observers.splice(pos, 1);
-    }
+    this.emit("update");
 };
 
 module.exports = Token;
