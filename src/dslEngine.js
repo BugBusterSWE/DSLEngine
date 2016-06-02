@@ -1,8 +1,8 @@
 var mongoose = require("mongoose");
 var DslConcreteStrategy = require("./model/DslConcreteStrategy");
-var MaapError = require("./utils/MaapError.js");
-var Token = require("./token.js");
-var NoConnectionEstabilished = require("./utils/noConnecionEstabilished.js");
+var MaapError = require("./utils/MaapError");
+var Token = require("./token");
+var NoConnectionEstabilished = require("./utils/noConnecionEstabilished");
 
 /**
  * Core class, it keep manage the connesion with MongoDB and run the DSL passed 
@@ -21,11 +21,6 @@ var NoConnectionEstabilished = require("./utils/noConnecionEstabilished.js");
 var DSLEngine = function () {
     this.strategy = new DslConcreteStrategy();
 	this.db = undefined;
-
-	this.runQuery = (pQuery, pModel) => {
-		var model = pModel(this.db);
-		pQuery(model);	
-	};
 };
 
 /**
@@ -42,8 +37,6 @@ DSLEngine.prototype.createToken = function () {
 	}
 
 	var token = new Token();
-	// Register event to run require query by the engines
-	token.on("runQuery", this.runQuery);
 
 	return token;
 };
