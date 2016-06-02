@@ -21,6 +21,11 @@ var NoConnectionEstabilished = require("./utils/noConnecionEstabilished.js");
 var DSLEngine = function () {
     this.strategy = new DslConcreteStrategy();
 	this.db = undefined;
+
+	this.runQuery = (pQuery, pModel) => {
+		var model = pModel(this.db);
+		pQuery(model);	
+	};
 };
 
 /**
@@ -36,7 +41,11 @@ DSLEngine.prototype.createToken = function () {
 		throw new NoConnectionEstabilished();	
 	}
 
-	return new Token(this);
+	var token = new Token();
+	// Register event to run require query by the engines
+	token.on("runQuery", this.runQuery);
+
+	return token;
 };
 
 /**
