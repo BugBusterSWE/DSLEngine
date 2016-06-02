@@ -34,7 +34,7 @@
     
     export class DashboardEngine implements ModelEngine {}
 
-    export interface DocumentEngine implements ModelEngine {
+    export class DocumentEngine implements ModelEngine {
         constructor(token : Token);
 
 	    deleteDocument(documentId : string) : Promise<void>;
@@ -102,5 +102,7 @@
         toString() : string;
         toError() : Error;
     }   
+
+    export interface NoConnectionEstabilished {}
 }
 
