@@ -1,19 +1,18 @@
-var DocumentSchema = require("./DocumentSchema");
 var CollectionModel = require("../model/CollectionModel");
 
 /**
  */
 var CollectionEngine = function () {
     this.registry = {};
-	this.token = undefined;
+    this.token = undefined;
 
-	this.setEvent = function () {
-		/*
-		Set the event manage by the Collection engine 
-  		this.token.on("event_interested", callback_to_invoke);
-		*/
-		this.token.on("update", register);
-	};
+    this.setEvent = function () {
+	/*
+	  Set the event manage by the Collection engine 
+  	  this.token.on("interestEvent", callback_to_invoke);
+	*/
+	this.token.on("update", register);
+    };
 };
 
 /**
@@ -40,23 +39,23 @@ Collection.prototype.connectToken = function (token) {
  */
 Collection.prototype.deleteDocument = function (collectionId, documentId) {
     var collection = this.registry[collectionId];
-	
+    
     return new Promise((resolve, reject) => {
-		if (!collection) {
-			reject(new MaapError(18000));
-		} else {
+	if (!collection) {
+	    reject(new MaapError(18000));
+	} else {
 
-			var showModel = collection.getShowModel();
-			showModel.deleteDocument(
-				documentId,
-				() => {
-					resolve();
-				},
-				(error) => {
-					reject(error);
-				}
-			);
+	    var showModel = collection.getShowModel();
+	    showModel.deleteDocument(
+		documentId,
+		() => {
+		    resolve();
+		},
+		(error) => {
+		    reject(error);
 		}
+	    );
+	}
     });
 };
 
@@ -79,36 +78,36 @@ CollectionEngine.prototype.editDocument = function (collectionId, documentId, co
     var collection = this.registry[collectionId];
 
     return new Promise((resolve, reject) => {
-		if (!collection) {
-			reject(new MaapError(18000));
-		} else {
-			var showModel = collection.getShowModel();
-			showModel.updateDocument(
-				documentId,
-				content,
-				(data) => {
-					resolve(data.toObject);
-				},
-				(error) => {
-					reject(error);
-				}
-			);
+	if (!collection) {
+	    reject(new MaapError(18000));
+	} else {
+	    var showModel = collection.getShowModel();
+	    showModel.updateDocument(
+		documentId,
+		content,
+		(data) => {
+		    resolve(data.toObject);
+		},
+		(error) => {
+		    reject(error);
 		}
+	    );
+	}
     });
 };
 
 CollectionEngine.prototype.getCollectionModels = function () {
-	var models = [];
+    var models = [];
 
-	for (var id in this.registry) {
-		if (this.registry.hasOwnProperty(id)) {
-			models.push(this.modelRegistry[id]);
-		}
+    for (var id in this.registry) {
+	if (this.registry.hasOwnProperty(id)) {
+	    models.push(this.modelRegistry[id]);
 	}
+    }
 
-	models.sort(compareCollectionWeight);
-	
-	return models;
+    models.sort(compareCollectionWeight);
+    
+    return models;
 };
 
 /**
@@ -130,23 +129,23 @@ CollectionEngine.prototype.getIndexPage = function (id, option) {
     var collection = this.registry[id];
     
     return new Promise((resolve, reject) => {
-		if (collection) {
-			var indexModel = collection.getIndexModel();
-			indexModel.getData(
-				option.page,
-				option.sort,
-				option.order,
-				(data) => {
-					resolve(data);
-				},
-				(err) => {
-					reject(err);
-				}
-			);
-
-		} else {
-			reject(new MaapError(7000));
+	if (collection) {
+	    var indexModel = collection.getIndexModel();
+	    indexModel.getData(
+		option.page,
+		option.sort,
+		option.order,
+		(data) => {
+		    resolve(data);
+		},
+		(err) => {
+		    reject(err);
 		}
+	    );
+
+	} else {
+	    reject(new MaapError(7000));
+	}
     });
 };
 
@@ -166,36 +165,36 @@ CollectionEngine.prototype.getShowPage = function (collectionId, documentId) {
     var collection = this.registry[collectionId];
     
     return new Promise((resolve, reject) => {
-		if (!collection) {
-			reject(new MaapError(18000));
-		} else {
-			var showModel = collection.getShowModel();
-			showModel.getData(
-				documentId,
-				(data) => {
-					resolve(data);
-				},
-				(error) => {
-					reject(error);
-				}
-			);
-		}	
- 	});
+	if (!collection) {
+	    reject(new MaapError(18000));
+	} else {
+	    var showModel = collection.getShowModel();
+	    showModel.getData(
+		documentId,
+		(data) => {
+		    resolve(data);
+		},
+		(error) => {
+		    reject(error);
+		}
+	    );
+	}	
+    });
  };
 
 CollectionEngine.prototype.list = function () {
-	var models = this.getCollectionModels();
-	var collections = [];
+    var models = this.getCollectionModels();
+    var collections = [];
 
-	for (var i=0; i<models.length; i++) {
-		collections.push({
-			id: models[i].getId(),
-			name: models[i].getName(),
-			label: models[i].getLabel()
-		});
-	}
+    for (var i=0; i<models.length; i++) {
+	collections.push({
+	    id: models[i].getId(),
+	    name: models[i].getName(),
+	    label: models[i].getLabel()
+	});
+    }
 
-	return collections;
+    return collections;
 };
 
 /**
@@ -206,26 +205,28 @@ CollectionEngine.prototype.list = function () {
  * Token's status
  */
 function register(status) { 
-	var rightModels = status.models.filter((model) => {
-		return model instanceof CollectionModel;	
-	});
+    var rightModels = status.models.filter((model) => {
+	return model instanceof CollectionModel;	
+    });
 
-	rightModels.forEach((model) => {
-		this.registry[model.getId()] = model;
-	});
+    rightModels.forEach((model) => {
+	this.registry[model.getId()] = model;
+	// Right model register with success
+	this.token.emit("ok");
+    });
 }
 
-var compareCollectionWeight = function(a, b) {
-	var aw = a.getWeight();
-	var bw = b.getWeight();
+function compareCollectionWeight(a, b) {
+    var aw = a.getWeight();
+    var bw = b.getWeight();
 
-	if (aw < bw) {
-		return -1;
-	}
-	if (aw > bw) {
-		return 1;
-	}
-	return 0;
+    if (aw < bw) {
+	return -1;
+    }
+    if (aw > bw) {
+	return 1;
+    }
+    return 0;
 };
 
 module.export = CollectionEngine;
