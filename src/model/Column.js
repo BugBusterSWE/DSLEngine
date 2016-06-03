@@ -20,9 +20,9 @@ var MaapError = require("../utils/MaapError");
 
 var identity = function(x) { return x; };
 
-var Column = function(indexModel, params) {
+var Column = function(params, parent) {
 	var self = this;
-	this.indexModel = indexModel;
+	this.parent = parent;
 
 	// Valori di default
 	this.selectable = false;
@@ -31,11 +31,17 @@ var Column = function(indexModel, params) {
 
 	// Leggi i parametri obbligatori e opzionali
 	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
-		throw new MaapError(15000, "Required parameter " + param + " in collection '" + self.indexModel.collectionModel.toString() + "', column '" + self.toString() + "'");
+		throw new MaapError(
+		    15000, 
+		    `Required parameter ${param} in column ${self.toString()} of \'${parent.toString()}\'`
+		);
 	});
 	AttributeReader.readOptionalAttributes(params, this, ["label", "sortable", "transformation", "selectable"]);
 	AttributeReader.assertEmptyAttributes(params, function(param){
-		throw new MaapError(15000, "Unexpected parameter " + param + " in collection '" + self.indexModel.collectionModel.toString() + "', column '" + self.toString() + "'");
+		throw new MaapError(
+		    15000, 
+		    `Unexpected parameter ${param} in column \'${self.toString()}\' of \'${parent.toString()}\'
+		);
 	});
 
 	// Valori di default
@@ -50,7 +56,10 @@ var Column = function(indexModel, params) {
 		typeof this.selectable !== 'boolean' ||
 		typeof this.sortable !== 'boolean'
 	) {
-		throw new MaapError(15000, "Parameter with a wrong type in collection '" + this.indexModel.collectionModel.toString() + "', column '" + this.toString() + "'");
+		throw new MaapError(
+		    15000, 
+		    `Parameter with a wrong type in column ${this.toString()} of \'${parent.toString()}\'`
+		);
 	}
 };
 
