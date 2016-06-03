@@ -35,50 +35,51 @@ var Row = require("./Row");
 var Column = require("./Column");
 
 var DslConcreteStrategy = function() {
-	this.sweetjs = new SweetjsCompiler({
-		ambient: __dirname	
-	});
+    this.sweetjs = new SweetjsCompiler({
+	ambient: __dirname	
+    });
 
-	try {
+    try {
     	this.cachedMacro = fs.readFileSync(`${__dirname}/macro.sjs`, "utf-8");
-	} catch (err) {
-		throw new MaapError(err);	
-	}
+    } catch (err) {
+	throw new MaapError(err);	
+    }
 };
 
-DslConcreteStrategy.prototype.load = function(content) {
-	// Inject the macro syntax into the content
-	content = `${this.cachedMacro}\n\n${content}`;
+DslConcreteStrategy.prototype.load = function(content, connection) {
+    // Inject the macro syntax into the content
+    content = `${this.cachedMacro}\n\n${content}`;
 
-	var out = null;
-	try {
-		out = this.sweetjs.compile(content);
-	} catch(err) {
-		errback(new MaapError(err));
-		return;
-	}
+    var out = null;
+    try {
+	out = this.sweetjs.compile(content);
+    } catch(err) {
+	errback(new MaapError(err));
+	return;
+    }
 
-	var models = [];
+    var models = [];
 
-	var registerModel = function (dsl) {
-		models.push(dsl);
-	};
+    var registerModel = function (dsl) {
+	models.push(dsl);
+    };
 
-	try {
-		vm.runInNewContext(out.code, {
-			registerModel: registerModel,
-			require: require,
-			CollectionModel: CollectionModel,
-			IndexModel: IndexModel,
-			ShowModel: ShowModel,
-			Row: Row,
-			Column: Column
-		});
-	} catch(err) {
-		throw new MaapError(err);
-	}
+    try {
+	vm.runInNewContext(out.code, {
+	    registerModel: registerModel,
+	    require: require,
+	    connection: connection,
+	    CollectionModel: CollectionModel,
+	    IndexModel: IndexModel,
+	    ShowModel: ShowModel,
+	    Row: Row,
+	    Column: Column
+	});
+    } catch(err) {
+	throw new MaapError(err);
+    }
 
-	return models;
+    return models;
 };
 
 module.exports = DslConcreteStrategy;
