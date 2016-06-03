@@ -19,49 +19,41 @@
 
 "use strict";
 
+var hash = require("object-hash");
 var AttributeReader = require("../utils/AttributeReader");
+var DocumentSchema = require("./DocumentSchema");
 var ShowModel = require("./ShowModel");
 var IndexModel = require("./IndexModel");
 var MaapError = require("../utils/MaapError");
 
+var CollectionModel = function(params, connection) {
+    var self = this;
+    
+    // Valori di default
+    this.weight = 0;
 
-var CollectionModel = function(params) {
-	var self = this;
-	
-	// Valori di default
+    this.showModel = new ShowModel({}, this);
+    this.indexModel = new IndexModel({}, this);
+
+    // Leggi i parametri obbligatori e opzionali
+    AttributeReader.readRequiredAttributes(params, this, ["name", "label"], function(param){
+	throw new MaapError(8000, "Required parameter '" + param + "' in collection '" + self.toString() + "'");
+    });
+
+    AttributeReader.readOptionalAttributes(params, this, ["weight"]);
+
+    AttributeReader.assertEmptyAttributes(params, function(param){
+	throw new MaapError(8000, "Unexpected parameter '" + param + "' in collection '" + self.toString() + "'");
+    });
+    
+    if (this.weight === undefined) {
 	this.weight = 0;
+    }
 
-	this.showModel = new ShowModel(this, {});
-	this.indexModel = new IndexModel(this, {});
-
-	// Leggi i parametri obbligatori e opzionali
-	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
-		throw new MaapError(8000, "Required parameter '" + param + "' in collection '" + self.toString() + "'");
-	});
-
-	AttributeReader.readOptionalAttributes(params, this, ["id", "label", "weight"]);
-
-	AttributeReader.assertEmptyAttributes(params, function(param){
-		throw new MaapError(8000, "Unexpected parameter '" + param + "' in collection '" + self.toString() + "'");
-	});
-	
-	// Valori di default
-	if (this.id === undefined) {
-		this.id = this.name;
-	}
-	if (this.label === undefined) {
-		var label = this.name.toLowerCase();
-		this.label = label.substring(0,1).toUpperCase() + label.substring(1);
-	}
-	if (this.weight === undefined) {
-		this.weight = 0;
-	}
-
-	// Verifiche
-	if (!this.id.match( /^[a-z0-9-]+$/i )) {
-		throw new MaapError(8001, "The collection id '"+this.id+"' must contain only alphabetic characters, digits and minus. It can not be empty");
-	};
+    this.model = connection.model(this.name, DocumentSchema);
+    this.id = hash(new Date().getMilliseconds());
 };
+
 CollectionModel.prototype.getId = function() {
 	return this.id;
 };
@@ -95,7 +87,7 @@ CollectionModel.prototype.setShowModel = function(showModel) {
 };
 
 CollectionModel.prototype.toString = function() {
-	return this.getName();
+	return `Collection ${this.getLabel()}`;
 };
 
 module.exports = CollectionModel;
