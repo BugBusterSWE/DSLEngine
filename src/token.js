@@ -14,25 +14,82 @@ const util = require("util");
  * }
  * ```
  * `status.models` is the array with the last models loaded.
+ * Furthemore a connection to MongoDB refer to the token, the engine
+ * should manages more connections.
  *
+ * @param db {mongoose.Connection}
+ * Connection to the db
  *
  * @history
  * | Name | Action performed | Date |
  * | ---  | ---              | ---  |
+ * | Andrea Mantovani | Insert reference to db | 2016-06-01 |
+ * | Andrea Mantovani | Method getRegistry | 2016-06-01 |
  * | Andrea Mantovani | Create class | 2016-06-01 |
  * 
  * @author Andrea Mantovani
  * @license MIT
  */
-var Token = function () {
+var Token = function (db) {
+    this.registry = [];
+    this.db = db;
+
     this.status = {
         models: []    
     };
 
-    EventEmitter.call(this);
+    this.waitAck = function (count) {
+	var self = this;
+	var errors = [];
+
+	var receive = () => {
+	    count--;
+
+	    if (count === 0) {
+		if (errors.length > 0) {
+		    self.emit("errorLoad", errors);
+		} else {
+		    self.emit("successLoad");
+		}
+	    };
+	};
+
+	// Register listener for the two ack type:
+	// ok -> model loaded correctly
+	// error -> an error is occured
+	// When error is emit, the error is insert into the errors array
+	// to send it as resone of the promise reject
+	this.on("ok", receive);
+	this.on("error", (err) => {
+	    errors.push(err);
+	    receive();
+	});
+    };
+
+    EventEmitter.call(this); 
 };
 
 util.inherits(Token, EventEmitter);
+
+/**
+ * @description
+ * Get the connection keep from the token.
+ * @return {mongoose.Connection}
+ * The connection.
+ */
+Token.prototype.getConnection = function () {
+    return this.db;
+};
+
+/**
+ * @description
+ * Get the model registry archived by Token.
+ * @return {Model[]}
+ * Array of the archive models.
+ */
+Token.prototype.getRegistry = function () {
+    return registry;
+};
 
 /**
  * @description
@@ -42,6 +99,8 @@ util.inherits(Token, EventEmitter);
  */
 Token.prototype.register = function (model) {
     this.status.model = model;
+    this.waitAck(model.length);
+
     this.emit("update", this.status);
 };
 
