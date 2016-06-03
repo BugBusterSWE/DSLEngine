@@ -23,6 +23,7 @@
   "homepage": "https://github.com/BugBusterSWE/DSLEngine#readme",
   "dependencies": {
     "mongoose": "^4.4.16",
+    "object-hash": "^1.1.2",
     "sweet.js": "~0.4.2",
     "sweetjs-compiler": "^1.0.1"
   },
