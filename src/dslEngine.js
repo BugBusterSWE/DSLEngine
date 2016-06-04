@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 var DslConcreteStrategy = require("./model/DslConcreteStrategy");
 var MaapError = require("./utils/MaapError");
 var Token = require("./token");
+var TransmissionNode = require("./transmissionNode");
 var NoConnectionEstabilished = require("./utils/noConnecionEstabilished");
 
 /**
@@ -21,6 +22,7 @@ var NoConnectionEstabilished = require("./utils/noConnecionEstabilished");
  */
 var DSLEngine = function () {
     this.strategy = new DslConcreteStrategy();
+    this.node = new TransmissionNode();
 };
 
 /**
@@ -48,34 +50,39 @@ DSLEngine.prototype.generateToken = function (db) {
  */
 DSLEngine.prototype.loadDSL = function (dsl, token) {
     return new Promise((resolve, reject) => {
-	try {
-	    var models = this.strategy.load(dsl, token.getConnection());
-	} catch (err) {
-	    // Catch the loading error
-	    reject(err);
-	}
-	
-	// Register event for the succefull loading or for catching all
-	// errors occured
-	var successLoad = () => {
-	    token.removeListener("errorLoad", errorLoad);
-	    resolve();
-	};
+        try {
+            var models = this.strategy.load(dsl, token.getConnection());
+        } catch (err) {
+            // Catch the loading error
+            reject(err);
+        }
 
-	var errorLoad = (err) => {
-	    token.removeListener("successLoad", succesLoad);
-	    reject(err);
-	};
-	
-	// All model are succesfull load
-	token.once("successLoad", successLoad);
-	// Catch all errors that it arises only when the models will
-	// register into the specific engine
-	token.once("errorLoad", errorLoad);
+        var number = model.length;
+        var errors = [];
+        
+        var request = (err) => {
+            number--;
 
-	token.registry(models);
+            if (err) {
+                errors.push(err);
+            }
+            
+            if (number === 0) {
+                this.node.emitComplete();
+                
+                if (errors.lenght > 0) {
+                    reject(errors);
+                } else {
+                    resolve();
+                }                
+            }
+        };
+        
+        this.node
+            .onAck(request)
+            .onComplete(request);
+            .emitLoad(models);
     });
 };
 
 module.exports = DSLEngine;
-
