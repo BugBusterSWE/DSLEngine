@@ -1,15 +1,10 @@
-var DocumentSchema = require("./DocumentSchema");
-
-var DocumentEngine = function (db, models) {
+var DocumentModel = require("../model/DocumentModel");
+    
+var DocumentEngine = function (node) {
     this.registry = [];
-
-    var buff = [];
-    buff.push(models);
-
-    buff.forEach((model) => {
-	model.bind(db.model(model.getName(), DocumentSchema)); 
-        this.registry[model.getId()] = model;
-    });
+    this.node = node;
+    
+    this.node.onLoad(registry.bind(this));
 };
 
 /**
@@ -21,10 +16,12 @@ var DocumentEngine = function (db, models) {
  * The promise is reject with a MaapError if an error has been occurred, 
  * otherwise it is resolve with nothing.
  */
-DSLEngine.prototype.deleteDocument = function (documentId) {
-    var showModel = this.registry[documentId];
+DSLEngine.prototype.deleteDocument = function (id, documentId) {
+    var documentModel = this.registry[id];
 
     return new Promise((resolve, reject) => {
+        var showModel = documentModel.getShowModel();
+        
 		if (!showModel) {
 			reject(new MaapError(18000));
 		} else {
@@ -55,11 +52,13 @@ DSLEngine.prototype.deleteDocument = function (documentId) {
  * The promise is resolve with the up-to-date data and it is reject with a 
  * MaapError if a error is occurred.
  */
-DSLEngine.prototype.editDocument = function (documentId, content) {
-    var showModel = this.registry[documentId];
+DSLEngine.prototype.editDocument = function (id, content) {
+    var documentModel = this.registry[id];
 
     return new Promise((resolve, reject) => {
-		if (!showModel) {
+		var showModel = documentModel.getShowModel();
+        
+        if (!showModel) {
 			reject(new MaapError(18000));
 		} else {
 			showModel.updateDocument(
@@ -85,11 +84,13 @@ DSLEngine.prototype.editDocument = function (documentId, content) {
  * The promise for the informations to build the Show Page. The promise is 
  * resolve with an ShowPage, otherwise it is reject with a MaapError.
  */
-DSLEngine.prototype.getShowPage = function (collectionId, documentId) {
-    var showModel = this.registry[documentId];
+DSLEngine.prototype.getShowPage = function (id, documentId) {
+    var documentModel = this.registry[id];
     
     return new Promise((resolve, reject) => {
-		if (!showModel) {
+		var showModel = documentModel.getShowModel();
+        
+        if (!showModel) {
 			reject(new MaapError(18000));
 		} else {
 			showModel.getData(
@@ -105,3 +106,15 @@ DSLEngine.prototype.getShowPage = function (collectionId, documentId) {
     });
     });
 };
+
+function register(models) { 
+    models.forEach((model) => {
+        if (model instanceof DocumentModel) {
+            this.registry[model.getId()] = model;
+            // Right model register with success
+            this.node.emitAck();
+        }
+    });
+}
+
+module.exports = DocumentEngine;
