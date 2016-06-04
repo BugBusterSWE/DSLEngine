@@ -23,7 +23,9 @@ var ObjectUtils = require("./ObjectUtils");
 var IndexModel = function(params, parent) {
     var self = this;
     this.parent = parent;
-    this.model = collectionModel.model;
+    this.parent.setIndexModel(this);
+    
+    this.model = parent.model;
     this.docModel = undefined;
     this.attributes = [];
 
@@ -38,10 +40,10 @@ var IndexModel = function(params, parent) {
 
     // Leggi i parametri obbligatori
     AttributeReader.readRequiredAttributes(params, this, [], function(param){
-	throw new MaapError(
-	    14000, 
-	    `Required parameter \'${param}\' in index of \'${self.parent.toString()}\'
-	);
+        throw new MaapError(
+            14000, 
+            `Required parameter \'${param}\' in index of \'${self.parent.toString()}\'`
+        );
     });
 
     // Leggi i parametri opzionali
@@ -49,23 +51,23 @@ var IndexModel = function(params, parent) {
 
     // Verifica che i parametri non siano vuoti
     AttributeReader.assertEmptyAttributes(params, function(param) {
-	throw new MaapError(
-	    14000, 
-	    `Unexpected parameter \'${param}\' in index of \'${self.parent.toString()}\'`
-	);
+        throw new MaapError(
+            14000, 
+            `Unexpected parameter \'${param}\' in index of \'${self.parent.toString()}\'`
+        );
     });
 
     // Valori di default
     if (this.query === undefined) {
-	this.query = {};
+	   this.query = {};
     }
 
     // Verifico che query sia un oggetto
     if (typeof this.query !== 'object') {
-	throw new MaapError(
-	    14000, 
-	    `Unexpected value of param 'query' in index of \'${self.parent.toString()}\', 'object' required, got \'${typeof this.query}\'`
-	);
+        throw new MaapError(
+            14000, 
+            `Unexpected value of param 'query' in index of \'${self.parent.toString()}\', 'object' required, got \'${typeof this.query}\'`
+        );
     }
 
     this.noMoreColumns();
@@ -111,31 +113,31 @@ IndexModel.prototype.setDefaultColumnSelectable = function() {
 // Se non ci sono attributi in attributes prende tutti i campi di document
 IndexModel.prototype.getColumnsForDocuments = function(documents) {
     if (this.attributes.length > 0) {
-	return this.attributes;
+	   return this.attributes;
     } else {
-	var exists = {};
-	var result = [];
+        var exists = {};
+        var result = [];
 
-	for (var i=0; i<documents.length; i++) {
-	    var document = documents[i];
-	    var attributes = ObjectUtils.getAttributes(document);
+        for (var i=0; i<documents.length; i++) {
+            var document = documents[i];
+            var attributes = ObjectUtils.getAttributes(document);
 
-	    for (var j=0; j<attributes.length; j++) {
-		var attr = attributes[j];
+            for (var j=0; j<attributes.length; j++) {
+                var attr = attributes[j];
 
-		if (!exists[attr]) {
-		    exists[attr] = true;
-		    result.push(
-			new Column(this, {
-			    name: attr,
-			    selectable: attr === "_id"
-			})
-		    );
-		}
-	    }
-	}
+                if (!exists[attr]) {
+                    exists[attr] = true;
+                    result.push(
+                        new Column(this, {
+                            name: attr,
+                            selectable: attr === "_id"
+                        })
+                    );
+                }
+            }
+        }
 
-	return result;
+        return result;
     }
 };
 
@@ -143,14 +145,14 @@ var formatHeader = function(attributes) {
     var jsonResult = [];
 
     attributes.forEach(function(attribute) {
-	var jsonElement = {
-	    label: attribute.getLabel(),
-	    name: attribute.getName(),
-	    selectable: attribute.isSelectable(),
-	    sortable: attribute.isSortable()
-	};
+        var jsonElement = {
+            label: attribute.getLabel(),
+            name: attribute.getName(),
+            selectable: attribute.isSelectable(),
+            sortable: attribute.isSortable()
+        };
 
-	jsonResult.push(jsonElement);
+        jsonResult.push(jsonElement);
     });
 
     return jsonResult;
@@ -160,20 +162,20 @@ var formatDocument = function(document, attributes) {
     var jsonResult = [];
 
     attributes.forEach(function(attribute) {
-	var name = attribute.getName();
-	var raw = ObjectUtils.getByDotPath(document, name);
-	var transformed = attribute.getTransformation()(raw);
-	
-	var jsonElement = {
-	    label: attribute.getLabel(),
-	    name: name,
-	    raw: raw,
-	    data: transformed,
-	    selectable: attribute.isSelectable(),
-	    sortable: attribute.isSortable()
-	};
+        var name = attribute.getName();
+        var raw = ObjectUtils.getByDotPath(document, name);
+        var transformed = attribute.getTransformation()(raw);
 
-	jsonResult.push(jsonElement);
+        var jsonElement = {
+            label: attribute.getLabel(),
+            name: name,
+            raw: raw,
+            data: transformed,
+            selectable: attribute.isSelectable(),
+            sortable: attribute.isSortable()
+        };
+
+        jsonResult.push(jsonElement);
     });
 
     return jsonResult;
@@ -183,74 +185,74 @@ IndexModel.prototype.getData = function(page, sortBy, order, callback, errback) 
     var self = this;
 
     if (!page) {
-	page = 1;
+	   page = 1;
     }
 
     var query = self.model.findAllPaginatedQuery(self.query, self.perpage, page);
 
     if (!sortBy) {
-	sortBy = self.sortby;
+	   sortBy = self.sortby;
     }
     if (!order) {
-	order = self.order;
+	   order = self.order;
     }
     if (order === "desc") {
-	query.sort("-" + sortBy);
+	   query.sort("-" + sortBy);
     } else {
-	query.sort(sortBy);
+	   query.sort(sortBy);
     }
 
     if (self.populate) {
-	if (self.populate instanceof Array) {
-	    for (var i=0; i<self.populate.length; i++) {
-		query.populate(self.populate[i]);
-	    }
-	}
-	else {
-	    query.populate(self.populate);
-	} 
+        if (self.populate instanceof Array) {
+            for (var i=0; i<self.populate.length; i++) {
+            query.populate(self.populate[i]);
+            }
+        }
+        else {
+            query.populate(self.populate);
+        } 
     }
     
     query.exec(function(err, _docs) {
-	if (err) {
-	    errback(err);
-	}
-	else {
-	    var docs = _docs.map(function(x){
-		return x.toObject();
-	    });
-	    var attributes = self.getColumnsForDocuments(docs);
+        if (err) {
+            errback(err);
+        }  
+        else {
+            var docs = _docs.map(function(x){
+              return x.toObject();
+            });
+            var attributes = self.getColumnsForDocuments(docs);
 
-	    var jsonResult = {
-		id: self.parent.getId(),
-		name: self.parent.getName(),
-		label: self.parent.getLabel(),
-		numdocs: 0,
-		perpage: self.perpage,
-		header: formatHeader(attributes),
-		documents: []
-	    };
-	    
-	    for (var i=0; i<docs.length; i++) {
-		var document = docs[i];
-		
-		var docJson = {
-		    id: document._id,
-		    data: formatDocument(document, attributes)
-		};
-		
-		jsonResult.documents.push(docJson);
-	    }
-	    
-	    self.model.count(self.query, function(err, count) {
-		if (err) {
-		    errback(err);
-		} else {
-		    jsonResult.numdocs = count;
-		    callback(jsonResult);
-		}
-	    });
-	}	
+            var jsonResult = {
+                id: self.parent.getId(),
+                name: self.parent.getName(),
+                label: self.parent.getLabel(),
+                numdocs: 0,
+                perpage: self.perpage,
+                header: formatHeader(attributes),
+                documents: []
+            };
+
+            for (var i=0; i<docs.length; i++) {
+                var document = docs[i];
+
+                var docJson = {
+                    id: document._id,
+                    data: formatDocument(document, attributes)
+                };
+
+                jsonResult.documents.push(docJson);
+            }
+
+            self.model.count(self.query, function(err, count) {
+                if (err) {
+                    errback(err);
+                } else {
+                    jsonResult.numdocs = count;
+                    callback(jsonResult);
+                }
+            });
+        }	
     });
 };
 

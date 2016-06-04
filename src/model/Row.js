@@ -20,20 +20,27 @@ var MaapError = require("../utils/MaapError");
 
 var identity = function(x) { return x; };
 
-var Row = function(showModel, params) {
+var Row = function(params, parent) {
 	var self = this;
-	this.showModel = showModel;
+	this.parent = parent;
+    this.parent.addRow(this);
 	
 	// Valori di default
 	this.transformation = identity;
 
 	// Leggi i parametri obbligatori e opzionali
 	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
-		throw new MaapError(16000, "Required parameter '" + param + "' in collection '" + self.showModel.collectionModel.toString() + "', row '" + self.toString() + "'");
+		throw new MaapError(
+            16000, 
+            `Required parameter '${param}' in row ${self.toString()} of '${this.parent.toString()}'`
+        );
 	});
 	AttributeReader.readOptionalAttributes(params, this, ["label", "transformation"]);
 	AttributeReader.assertEmptyAttributes(params, function(param){
-		throw new MaapError(16000, "Unexpected parameter '" + param + "' in collection '" + self.showModel.collectionModel.toString() + "', row '" + self.toString() + "'");
+		throw new MaapError(
+            16000, 
+            `Unexpected parameter '${param}' in row '${self.toString()}' of '${parent.toString()}'`
+        );
 	});
 
 	// Valori di default
@@ -46,7 +53,10 @@ var Row = function(showModel, params) {
 		typeof this.name !== 'string' ||
 		typeof this.transformation !== 'function'
 	) {
-		throw new MaapError(16000, "Parameter with a wrong type in collection '" + this.showModel.collectionModel.toString() + "', row '" + this.toString() + "'");
+		throw new MaapError(
+            16000, 
+            `Parameter with a wrong type in row '${this.toString()}' of '${this.parent.toString()}'`
+        );
 	}
 };
 

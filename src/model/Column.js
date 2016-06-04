@@ -23,6 +23,7 @@ var identity = function(x) { return x; };
 var Column = function(params, parent) {
 	var self = this;
 	this.parent = parent;
+    parent.addColumn(this);
 
 	// Valori di default
 	this.selectable = false;
@@ -40,7 +41,7 @@ var Column = function(params, parent) {
 	AttributeReader.assertEmptyAttributes(params, function(param){
 		throw new MaapError(
 		    15000, 
-		    `Unexpected parameter ${param} in column \'${self.toString()}\' of \'${parent.toString()}\'
+		    `Unexpected parameter ${param} in column \'${self.toString()}\' of \'${parent.toString()}\'`
 		);
 	});
 
