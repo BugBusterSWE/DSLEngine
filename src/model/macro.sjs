@@ -1,6 +1,7 @@
 syntax row = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
+    let parent = ctx.next().value;
       
     let result = #``;
     
@@ -13,27 +14,7 @@ syntax row = function (ctx) {
         paramCtx.next();
     }
     
-    result = #`var _row = new Row(_show, {${result}}) _show.addRow(_row)`;
-     
-    return result;
-}
-
-syntax rowDoc = function (ctx) {
-    // The content of the parens in a collection
-    let paramCtx = ctx.next().value.inner();
-      
-    let result = #``;
-    
-    // Get all params
-    for (let ptx of paramCtx) {
-        // Eat ':'
-        paramCtx.next();
-        result = result.concat(#`${ptx}: ${paramCtx.next('expr').value}`);
-        // Eat ','
-        paramCtx.next();
-    }
-    
-    result = #`var _row = new Row(_document, {${result}}) _document.addRow(_row)`;
+    result = #`new Row({${result}}, ${parent})`;
      
     return result;
 }
@@ -41,6 +22,7 @@ syntax rowDoc = function (ctx) {
 syntax column = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
+    let parent = ctx.next().value
       
     let result = #``;
     
@@ -53,7 +35,7 @@ syntax column = function (ctx) {
         paramCtx.next();
     }
     
-    result = #`var _column = new Column(_index, {${result}}) _index.addColumn(_column)`;
+    result = #`new Column({${result}}, ${parent})`;
      
     return result;
 }
@@ -63,6 +45,7 @@ syntax show = function (ctx) {
     let paramCtx = ctx.next().value.inner();
     // The content of the braces in a collection
     let bodyCtx = ctx.next().value.inner();
+    let parent = ctx.next().value
       
     let result = #``;
      
@@ -75,12 +58,12 @@ syntax show = function (ctx) {
         paramCtx.next();
     }
      
-    result = #`_show = new ShowModel({${result}}, _collection) _collection.setShowModel(_show)`;
+    result = #`var _show = new ShowModel({${result}}, ${parent})`;
      
     // Get all structures
     for (let btx of bodyCtx) {
         if (btx.isIdentifier('row')) {
-            result = result.concat(#`row ${bodyCtx.next().value}`);
+            result = result.concat(#`row ${bodyCtx.next().value} _show`);
         }
     }
      
@@ -93,6 +76,7 @@ syntax index = function (ctx) {
     let paramCtx = ctx.next().value.inner();
     // The content of the braces in a collection
     let bodyCtx = ctx.next().value.inner();
+    let parent = ctx.next().value;
       
     let result = #``;
      
@@ -105,12 +89,12 @@ syntax index = function (ctx) {
         paramCtx.next();
     }
      
-    result = #`_index = new IndexModel({${result}}, _collection) _collection.setIndexModel(_index)`;
+    result = #`var _index = new IndexModel({${result}}, ${parent})`;
      
     // Get all structures
     for (let btx of bodyCtx) {
         if (btx.isIdentifier('column')) {
-            result = result.concat(#`column ${bodyCtx.next().value}`);
+            result = result.concat(#`column ${bodyCtx.next().value} _index`);
         }
     }
      
@@ -134,12 +118,12 @@ syntax document = function (ctx) {
         paramCtx.next();
     }
      
-    result = #`_document = new ShowModel({${result}}) register(_document)`;
+    result = #`var _document = new DocumentModel({${result}}, db) register(_document)`;
      
     // Get all structures
     for (let btx of bodyCtx) {
         if (btx.isIdentifier('row')) {
-            result = result.concat(#`rowDoc ${bodyCtx.next().value}`);
+            result = result.concat(#`row ${bodyCtx.next().value} _document`);
         }
     }
      
@@ -163,15 +147,14 @@ syntax collection = function (ctx) {
         paramCtx.next();
     }
      
-    let result = #`_collection = new CollectionModel({${param}}) registerModel(_collection)`;
+    let result = #`var _collection = new CollectionModel({${param}}, db) registerModel(_collection)`;
      
     // Get all structure
     for (let btx of bodyCtx) {
         if (btx.isIdentifier('index')) {
-            result = result.concat(#`index ${bodyCtx.next().value} ${bodyCtx.next().value}`);
-             
+            result = result.concat(#`index ${bodyCtx.next().value} ${bodyCtx.next().value} _collection`);
         } else if (btx.isIdentifier('show')) {
-            result = result.concat(#`show ${bodyCtx.next().value} ${bodyCtx.next().value}`);
+            result = result.concat(#`show ${bodyCtx.next().value} ${bodyCtx.next().value} _collection`);
         }
     }
     
@@ -195,7 +178,7 @@ syntax cell = function (ctx) {
         paramCtx.next();
     }
     
-    let result = #`_cell = new Cell({${param}}) registerModel(_cell)`;
+    let result = #`var _cell = new CellModel({${param}}, db) registerModel(_cell)`;
     
     let value = #``;
     
@@ -209,11 +192,3 @@ syntax cell = function (ctx) {
     
     return result.concat(#`_cell.set({${value}})`);
 }
-
-var _collection;
-var _document;
-var _index;
-var _show;
-var _cell;
-
-
