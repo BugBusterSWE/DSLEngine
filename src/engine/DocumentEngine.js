@@ -112,7 +112,7 @@ function register(models) {
         if (model instanceof DocumentModel) {
             this.registry[model.getId()] = model;
             // Right model register with success
-            this.node.emitAck();
+            this.node.emitReply();
         }
     });
 }
