@@ -3,6 +3,7 @@ var DslConcreteStrategy = require("./model/DslConcreteStrategy");
 var MaapError = require("./utils/MaapError");
 var Token = require("./token");
 var TransmissionNode = require("./transmissionNode");
+var LoadModelsProtocol = require("./protocol/loadModelsProtocol")
 var NoConnectionEstabilished = require("./utils/noConnecionEstabilished");
 
 /**
@@ -57,31 +58,18 @@ DSLEngine.prototype.loadDSL = function (dsl, token) {
             reject(err);
         }
 
-        var number = model.length;
-        var errors = [];
-        
-        var request = (err) => {
-            number--;
-
-            if (err) {
-                errors.push(err);
-            }
-            
-            if (number === 0) {
-                this.node.emitComplete();
-                
-                if (errors.lenght > 0) {
-                    reject(errors);
+        protocolLoad = new LoadModelsProtocol(this.node);
+        protocolLoad
+            .waitAck(models.length)
+            .onComplete((err) => {
+                if (err) {
+                    reject(err);
                 } else {
                     resolve();
-                }                
-            }
-        };
+                }
+            });
         
-        this.node
-            .onAck(request)
-            .onComplete(request);
-            .emitLoad(models);
+        this.node.emitLoad(models);
     });
 };
 
