@@ -34,23 +34,16 @@ TransmissionNode.prototype.emitLoad = function (models) {
  * @description
  * Alert the client that the model is receved.
  */
-TransmissionNode.prototype.emitAck = function (err) {
-    this.emit("ack", err);  
+TransmissionNode.prototype.emitReply = function (payload) {
+    this.emit("reply", payload);  
 };
 
-TransmissionNode.prototype.emitComplete = function () {
-    this.emit("complete");  
+TransmissionNode.prototype.finish = function (listener) {
+    return this.removeListener("reply", listener);
 };
 
-
-TransmissionNode.prototype.onAck = function (listener) {
-    this.on("ack", listener);
-    return this;
-};
-
-TransmissionNode.prototype.onComplete = function (listener) {
-    this.removeListener("ack", listener);
-    return this;
+TransmissionNode.prototype.onReply = function (listener) {
+    return this.on("reply", listener);
 };
 
 /**
