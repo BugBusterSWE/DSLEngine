@@ -125,7 +125,12 @@ ShowModel.prototype.deleteDocument = function(documentId, callback, errback) {
     );
 };
 
-ShowModel.prototype.updateDocument = function(documentId, documentUpdated, callback, errback) {
+ShowModel.prototype.updateDocument = function(
+    documentId,
+    documentUpdated, 
+    callback, 
+    errback
+) {
     this.model.safeFindById(
         documentId,
         function success(result) {
@@ -142,6 +147,10 @@ ShowModel.prototype.updateDocument = function(documentId, documentUpdated, callb
         },
         errback
     );
+};
+
+ShowModel.prototype.toString = function () {
+    return this.parent.toString();  
 };
 
 module.exports = ShowModel;
