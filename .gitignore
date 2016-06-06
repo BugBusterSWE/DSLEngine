@@ -4,3 +4,4 @@ node_modules/
 # temporary file emacs
 *.*~
 .idea/
+*#*#
