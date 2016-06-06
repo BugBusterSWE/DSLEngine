@@ -21,6 +21,10 @@ var MaapError = require("../utils/MaapError");
 
 var DocumentSchema = new Schema({}, {strict: false});
 
+DocumentSchema.statics.findAll = function (query) {
+    return this.find(query);
+};
+
 /* A partire dalla 1 */
 DocumentSchema.statics.findAllPaginatedQuery = function(query, perpage, page, errback) {
 	if (page < 1) {
