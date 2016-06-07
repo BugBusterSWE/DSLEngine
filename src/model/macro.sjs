@@ -101,40 +101,30 @@ syntax index = function (ctx) {
     return result;
 }
  
-syntax document = function (ctx) {
+syntax cellInstance = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
-    // The content of the braces in a collection
-    let bodyCtx = ctx.next().value.inner();
-      
-    let result = #``;
-     
+    
+    let param = #``;
+    
     // Get all params
     for (let ptx of paramCtx) {
         // Eat ':'
         paramCtx.next();
-        result = result.concat(#`${ptx}: ${paramCtx.next('expr').value}`);
+        param = param.concat(#`${ptx}: ${paramCtx.next('expr').value}`);
         // Eat ','
         paramCtx.next();
     }
-     
-    result = #`var _document = new DocumentModel({${result}}, db) register(_document)`;
-     
-    // Get all structures
-    for (let btx of bodyCtx) {
-        if (btx.isIdentifier('row')) {
-            result = result.concat(#`row ${bodyCtx.next().value} _document`);
-        }
-    }
-     
-    return result;
+    
+    return #`new CellModel({${param}})`;
 }
 
-syntax collection = function (ctx) {
+syntax collectionInstance = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
     // The content of the braces in a collection
     let bodyCtx = ctx.next().value.inner();
+    let parent = ctx.next().value;
     
     let param = #``;
     
@@ -147,26 +137,29 @@ syntax collection = function (ctx) {
         paramCtx.next();
     }
      
-    let result = #`var _collection = new CollectionModel({${param}}, db) registerModel(_collection)`;
+    let result = #`new CellModel({${param}}, db)`;
      
     // Get all structure
     for (let btx of bodyCtx) {
         if (btx.isIdentifier('index')) {
-            result = result.concat(#`index ${bodyCtx.next().value} ${bodyCtx.next().value} _collection`);
+            result = result.concat(#`index ${bodyCtx.next().value} ${bodyCtx.next().value} ${parent}`);
         } else if (btx.isIdentifier('show')) {
-            result = result.concat(#`show ${bodyCtx.next().value} ${bodyCtx.next().value} _collection`);
+            result = result.concat(#`show ${bodyCtx.next().value} ${bodyCtx.next().value} ${parent}`);
         }
     }
     
     return result;
 }
 
-syntax cell = function (ctx) {
+syntax documentInstance = function (ctx) {
     // The content of the parens in a collection
     let paramCtx = ctx.next().value.inner();
-    
+    // The content of the braces in a collection
+    let bodyCtx = ctx.next().value.inner();
+    let parent = ctx.next().value;
+
     let param = #``;
-    
+     
     // Get all params
     for (let ptx of paramCtx) {
         // Eat ':'
@@ -175,6 +168,94 @@ syntax cell = function (ctx) {
         // Eat ','
         paramCtx.next();
     }
+     
+    let result = #`new DocumentModel({${param}}, db)`;
+     
+    // Get all structures
+    for (let btx of bodyCtx) {
+        if (btx.isIdentifier('row')) {
+            result = result.concat(#`row ${bodyCtx.next().value} ${parent}`);
+        }
+    }
+     
+    return result;
+} 
+ 
+syntax document = function (ctx) {
+    let delimiterHeadCtx = ctx.next().value;
+    let delimiterBodyCtx = ctx.next().value;
     
-    return #`var _cell = new CellModel({${param}}, db) registerModel(_cell)`;
+    let result = #`var _document = documentInstance ${delimiterHeadCtx} ${delimiterBodyCtx} _document;`; 
+    return result.concat(#`registerModel(_document);`);
+}
+
+syntax collection = function (ctx) {
+    let delimiterHeadCtx = ctx.next().value;
+    let delimiterBodyCtx = ctx.next().value;
+    
+    let result =  #`var _collection;`;
+    result = result.concat(#`collectionInstance ${delimiterHeadCtx} ${delimiterBodyCtx} _collection;`);
+    return result.concat(#`registerModel(_collection);`);
+}
+
+syntax cell = function (ctx) {
+    // The content of the parens in a collection
+    let delimiterParamCtx = ctx.next().value;
+    return #`var _cell = cellInstance ${delimiterParamCtx} registerModel(_cell)`;
+}
+
+syntax dashrow = function (ctx) {
+    let referenceCtx = ctx.next().value.inner();
+    let parent = ctx.next().value;
+    
+    let result = #`var _dashrow = new DashRowModel(); ${parent}.appendRow(_dashrow);`;
+    
+    for (let rtx of referenceCtx) {
+        if (rtx.isIdentifier("cell")) {
+            let delimiter = referenceCtx.next().value;
+            let first = delimiter.inner().next().value;
+            
+            if (first.isStringLiteral()) {
+                result = result.concat(#`_dashrow.registerCell(${first});`);
+            } else {
+                result = result.concat(#`var _cell = cellInstance ${delimiter};`);
+                result = result.concat(#`registerModel(_cell); _dashrow.registerCell(_cell.getLabel())`);
+            }   
+        } else if (rtx.isIdentifier("collection")) {
+            let delimiterHead = referenceCtx.next().value;
+            let first = delimiterHead.inner().next().value;
+            
+            if (first.isStringLiteral()) {
+                result = result.concat(#`_dashrow.registerCollection(${first});`);
+            } else {
+                let delimiterBody = referenceCtx.next().value;
+            
+                result = result.concat(
+                    #`var _collection = collectionInstance ${delimiterHead} ${delimiterBody} _collection;`
+                );
+                result = result.concat(
+                    #`registerModel(_collection); _dashrow.registerCollection(_collection.getLabel())`
+                );
+            }   
+        } else if (rtx.isIdentifier("document")) {
+            
+            let delimiterHead = referenceCtx.next().value;
+            let first = delimiterHead.inner().next().value;
+            
+            if (first.isStringLiteral()) {
+                result = result.concat(#`_dashrow.registerDocument(${first});`);
+            } else {
+                let delimiterBody = referenceCtx.next().value;
+                
+                result = result.concat(
+                    #`var _document = documentInstance ${delimiterHead} ${delimiterBody} _document;`
+                );
+                result = result.concat(
+                    #`registerModel(_document); _dashrow.registerDocument(_document.getLabel())`
+                );
+            }   
+        }
+    }
+    
+    return #`${result}`;
 }
