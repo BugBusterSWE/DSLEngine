@@ -14,7 +14,7 @@ var CellModel = function (params, connection) {
         function (param) {
             throw new MaapError(
             8000,
-            `Required parameter '${param}' in cell '${self.toString()}'`
+            `Required parameter \'${param}\' in \'${this.toString()}\'`
             );
         }
     );
@@ -27,8 +27,7 @@ var CellModel = function (params, connection) {
         function(param) {
             throw new MaapError(
                 14000, 
-                `Unexpected parameter \'${param}\' in index of ` +  
-                `\'${self.parent.toString()}\'`
+                `Unexpected parameter \'${param}\' in \'${this.toString()}\'`
             );
         }
     );
@@ -42,14 +41,36 @@ var CellModel = function (params, connection) {
     }
     
     if (this.value instanceof Object) {
+	this.sortby = "_id";
+	this.order = "asc";
+
         AttributeReader.readRequiredAttributes(
             this.value,
             this,
             ["collection", "query"]
         )
+
+	AttributeReader.readOptionalAttributes(
+	    this.value,
+	    this,
+	    ["sortby", "order"]
+	);
+
+	AttributeReader.assertEmptyAttributes(
+	    this.value,
+	    function (param) {
+		throw new MaapError(
+		    14000,
+		    `Unexpected parameter \'${param}\' in ` +
+	            `\'${this.toString()}\'`
+		);
+	    }
+	);
+	
+	this.model = connection.model(this.collection, DocumentSchema);
+	delete this.value;
     }
-    
-    this.model = connection.model(this.collection, DocumentSchema);
+
     this.id = hash(new Date().getMilliseconds());
 }
 
@@ -57,8 +78,12 @@ CellModel.prototype.getId = function () {
     return this.id;
 };
 
-CellModel.prototype.set = function (source) {
-    this.source = source;
+CellModel.prototype.getLabel = function () {
+    return this.label;
+};
+
+CellModel.prototype.getType = function () {
+    return this.type;
 };
 
 CellModel.prototype.getData = function (callback) {
@@ -70,12 +95,12 @@ CellModel.prototype.getData = function (callback) {
     };
     
     if (this.value instanceof String || this.value instanceof Number) {
-        jsonResult.result = this.source;
+        jsonResult.result = this.value;
         callback(undefined, jsonResult);
     } else {
-        var query = this.model.findAllPaginatedQuery(this.source, 1);
+        var query = this.model.findAllPaginatedQuery(this.query, 1);
         
-        if (order === "desc") {
+        if (this.order === "desc") {
 	       query.sort(`-${this.sortby}`);
         } else {
 	       query.sort(this.sortby);
