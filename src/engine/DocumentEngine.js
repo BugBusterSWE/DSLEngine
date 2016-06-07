@@ -1,5 +1,5 @@
 var DocumentModel = require("../model/DocumentModel");
-    
+
 var DocumentEngine = function (node) {
     this.registry = [];
     this.node = node;
@@ -22,20 +22,20 @@ DSLEngine.prototype.deleteDocument = function (id, documentId) {
     return new Promise((resolve, reject) => {
         var showModel = documentModel.getShowModel();
         
-		if (!showModel) {
-			reject(new MaapError(18000));
-		} else {
+	if (!showModel) {
+	    reject(new MaapError(18000));
+	} else {
 
-			showModel.deleteDocument(
-				documentId,
-				() => {
-					resolve();
-				},
-				(error) => {
-					reject(error);
-				}
-			);
+	    showModel.deleteDocument(
+		documentId,
+		() => {
+		    resolve();
+		},
+		(error) => {
+		    reject(error);
 		}
+	    );
+	}
     });
 };
 
@@ -56,22 +56,22 @@ DSLEngine.prototype.editDocument = function (id, content) {
     var documentModel = this.registry[id];
 
     return new Promise((resolve, reject) => {
-		var showModel = documentModel.getShowModel();
+	var showModel = documentModel.getShowModel();
         
         if (!showModel) {
-			reject(new MaapError(18000));
-		} else {
-			showModel.updateDocument(
-				documentId,
-				content,
-				(data) => {
-					resolve(data.toObject);
-				},
-				(error) => {
-					reject(error);
-				}
-			);
+	    reject(new MaapError(18000));
+	} else {
+	    showModel.updateDocument(
+		documentId,
+		content,
+		(data) => {
+		    resolve(data.toObject);
+		},
+		(error) => {
+		    reject(error);
 		}
+	    );
+	}
     });
 };
 
@@ -88,22 +88,21 @@ DSLEngine.prototype.getShowPage = function (id, documentId) {
     var documentModel = this.registry[id];
     
     return new Promise((resolve, reject) => {
-		var showModel = documentModel.getShowModel();
+	var showModel = documentModel.getShowModel();
         
         if (!showModel) {
-			reject(new MaapError(18000));
-		} else {
-			showModel.getData(
-				documentId,
-				(data) => {
-					resolve(data);
-				},
-				(error) => {
-					reject(error);
-				}
-			);
+	    reject(new MaapError(18000));
+	} else {
+	    showModel.getData(
+		documentId,
+		(data) => {
+		    resolve(data);
+		},
+		(error) => {
+		    reject(error);
 		}
-    });
+	    );
+	}
     });
 };
 
@@ -118,3 +117,4 @@ function register(models) {
 }
 
 module.exports = DocumentEngine;
+
