@@ -178,17 +178,5 @@ syntax cell = function (ctx) {
         paramCtx.next();
     }
     
-    let result = #`var _cell = new CellModel({${param}}, db) registerModel(_cell)`;
-    
-    let value = #``;
-    
-    for (let btx of bodyCtx) {
-       if (btx.isIdentifier()) {
-            bodyCtx.next();
-            value = value.concat(#`${btx}: ${bodyCtx.next().value}`);
-            bodyCtx.next();
-       }
-    }
-    
-    return result.concat(#`_cell.set({${value}})`);
+    return #`var _cell = new CellModel({${param}}, db) registerModel(_cell)`;
 }
