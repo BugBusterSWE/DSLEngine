@@ -137,7 +137,7 @@ syntax collectionInstance = function (ctx) {
         paramCtx.next();
     }
      
-    let result = #`new CellModel({${param}}, db)`;
+    let result = #`new CollectionModel({${param}}, db)`;
      
     // Get all structure
     for (let btx of bodyCtx) {
@@ -193,8 +193,7 @@ syntax collection = function (ctx) {
     let delimiterHeadCtx = ctx.next().value;
     let delimiterBodyCtx = ctx.next().value;
     
-    let result =  #`var _collection;`;
-    result = result.concat(#`collectionInstance ${delimiterHeadCtx} ${delimiterBodyCtx} _collection;`);
+    let result = #`var _collection = collectionInstance ${delimiterHeadCtx} ${delimiterBodyCtx} _collection;`;
     return result.concat(#`registerModel(_collection);`);
 }
 
@@ -208,7 +207,7 @@ syntax dashrow = function (ctx) {
     let referenceCtx = ctx.next().value.inner();
     let parent = ctx.next().value;
     
-    let result = #`var _dashrow = new DashRowModel(); ${parent}.appendRow(_dashrow);`;
+    let result = #`var _dashrow = new DashRowModel();`;
     
     for (let rtx of referenceCtx) {
         if (rtx.isIdentifier("cell")) {
@@ -219,7 +218,7 @@ syntax dashrow = function (ctx) {
                 result = result.concat(#`_dashrow.registerCell(${first});`);
             } else {
                 result = result.concat(#`var _cell = cellInstance ${delimiter};`);
-                result = result.concat(#`registerModel(_cell); _dashrow.registerCell(_cell.getLabel())`);
+                result = result.concat(#`_dashrow.registerCell(_cell.getLabel()) registerModel(_cell); `);
             }   
         } else if (rtx.isIdentifier("collection")) {
             let delimiterHead = referenceCtx.next().value;
@@ -234,7 +233,7 @@ syntax dashrow = function (ctx) {
                     #`var _collection = collectionInstance ${delimiterHead} ${delimiterBody} _collection;`
                 );
                 result = result.concat(
-                    #`registerModel(_collection); _dashrow.registerCollection(_collection.getLabel())`
+                    #`_dashrow.registerCollection(_collection.getLabel()) registerModel(_collection);`
                 );
             }   
         } else if (rtx.isIdentifier("document")) {
@@ -251,11 +250,40 @@ syntax dashrow = function (ctx) {
                     #`var _document = documentInstance ${delimiterHead} ${delimiterBody} _document;`
                 );
                 result = result.concat(
-                    #`registerModel(_document); _dashrow.registerDocument(_document.getLabel())`
+                    #`_dashrow.registerDocument(_document.getLabel()) registerModel(_document); `
                 );
             }   
         }
     }
     
-    return #`${result}`;
+    return #`${result} _dashrow.swap(${parent});`;
 }
+
+syntax dashboard = function (ctx) {
+    // The content of the parens in a collection
+    let paramCtx = ctx.next().value.inner();
+    // The content of the braces in a collection
+    let bodyCtx = ctx.next().value.inner();
+
+    let param = #``;
+     
+    // Get all params
+    for (let ptx of paramCtx) {
+        // Eat ':'
+        paramCtx.next();
+        param = param.concat(#`${ptx}: ${paramCtx.next('expr').value}`);
+        // Eat ','
+        paramCtx.next();
+    }
+     
+    let result = #`var _dashboard = new DashboardModel({${param}})`;
+     
+    // Get all structures
+    for (let btx of bodyCtx) {
+        if (btx.isIdentifier('row')) {
+            result = result.concat(#`dashrow ${bodyCtx.next().value} _dashboard`);
+        }
+    }
+     
+    return result;
+} 
