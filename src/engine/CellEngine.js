@@ -1,6 +1,8 @@
 var CellModel = require("../model/CellModel");
 var AttributeReader = require("../utils/AttributeReader");
 
+var _LABEL = "cell";
+
 /**
  */
 var CellEngine = function (node) {
@@ -8,6 +10,8 @@ var CellEngine = function (node) {
     this.node = node;
 
     this.node.onLoad(register.bind(this));
+    this.node.onEjectToken(saveEnvironment.bind(this));
+    this.node.onPushToken(loadEnvironment.bind(this));
     this.node.on("getIdCellByLabel", getIdByLabel.bind(this));
 };
 
@@ -38,16 +42,6 @@ CellEngine.prototype.getValue = function (id) {
     });
 };
 
-
-function register(models) {
-    models.forEach((model) => {
-        if (model instanceof CellModel) {
-            this.registry[model.getId()] = model;
-            this.node.emitReply();
-        }
-    });
-}
-
 function getIdByLabel(label, callback) {
     var c = this.registry.find((cell) => {
         return cell.getIdByLabel() === label;
@@ -58,6 +52,23 @@ function getIdByLabel(label, callback) {
     } else {
         callback(undefined, coll.getId());
     }
+}
+
+function loadEnvironment(token) {
+    this.registry = token.load(_LABEL);
+}
+
+function register(models) {
+    models.forEach((model) => {
+        if (model instanceof CellModel) {
+            this.registry[model.getId()] = model;
+            this.node.emitReply();
+        }
+    });
+}
+
+function saveEnvironment(token) {
+    token.save(_LABEL, this.registry);
 }
 
 module.exports = CellEngine;

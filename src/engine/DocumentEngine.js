@@ -1,12 +1,15 @@
 var DocumentModel = require("../model/DocumentModel");
 var AttributeReader = require("../utils/AttributeReader");
 
+var _LABEL = "document";
 
 var DocumentEngine = function (node) {
     this.registry = [];
     this.node = node;
     
-    this.node.onLoad(registry.bind(this));
+    this.node.onLoad(register.bind(this));
+    this.node.onEjectToken(saveEnvironment.bind(this));
+    this.node.onPushToken(loadEnvironment.bind(this));
     this.node.on("getIdDocumentById", getIdByLabel.bind(this));
 };
 
@@ -121,6 +124,10 @@ function getIdByLabel(label, callback) {
     }
 }
 
+function loadEnvironment(token) {
+    this.registry = token.load(_LABEL);
+}
+
 function register(models) { 
     models.forEach((model) => {
         if (model instanceof DocumentModel) {
@@ -129,6 +136,10 @@ function register(models) {
             this.node.emitReply();
         }
     });
+}
+
+function saveEnvironment(token) {
+    token.save(_LABEL, this.registry);
 }
 
 module.exports = DocumentEngine;

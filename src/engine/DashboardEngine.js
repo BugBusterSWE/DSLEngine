@@ -1,6 +1,8 @@
 var DashboardModel = require("../model/DashboardModel");
 var AttributeReader = require("../utils/AttributeReader");
 
+var _LABEL = "dashboard";
+
 /**
  */
 var DashboardEngine = function (node) {
@@ -11,6 +13,8 @@ var DashboardEngine = function (node) {
     this.replaceLabelWithId = replaceLabelWithId;
     
     this.node.onLoad(this.register);
+    this.node.onEjectToken(saveEnvironment.bind(this));
+    this.node.onPushToken(loadEnvironment.bind(this));
 }
 
 DashboardEngine.prototype.getDashboard = function (id) {
@@ -28,6 +32,10 @@ DashboardEngine.prototype.getDashboard = function (id) {
         }
     });
 };
+
+function loadEnvironment(token) {
+    this.registry = token.load(_LABEL);
+}
 
 function replaceLabelWithId(reference) {
     var idAndType = {
@@ -103,6 +111,10 @@ function register(models) {
             });
         }
     });
+}
+
+function saveEnvironment(token) {
+    token.save(_LABEL, this.registry);
 }
 
 module.exports = DashboardEngine;

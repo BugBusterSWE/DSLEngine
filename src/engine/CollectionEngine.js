@@ -1,6 +1,7 @@
 var CollectionModel = require("../model/CollectionModel");
 var AttributeReader = require("../utils/AttributeReader");
 
+var _LABEL = "collection";
 
 /**
  */
@@ -9,6 +10,8 @@ var CollectionEngine = function (node) {
     this.node = node;
 
     this.node.onLoad(register.bind(this));
+    this.node.onEjectToken(saveEnvironment.bind(this));
+    this.node.onPushToken(loadEnvironment.bind(this));
     this.node.on("getIdCollectionByLabel", getIdByLabel.bind(this));
 };
 
@@ -183,6 +186,35 @@ CollectionEngine.prototype.list = function () {
     return collections;
 };
 
+function compareCollectionWeight(a, b) {
+    var aw = a.getWeight();
+    var bw = b.getWeight();
+
+    if (aw < bw) {
+	return -1;
+    }
+    if (aw > bw) {
+	return 1;
+    }
+    return 0;
+};
+
+function getIdByLabel(label, callback) {
+    var coll = this.registry.find((collection) => {
+        return collection.getLabel() === label;        
+    });
+    
+    if (coll == undefined) {
+        callback(new MaapError(18000));
+    } else {
+        callback(undefined, coll.getId());
+    }
+}
+
+function loadEnvironment(token) {
+    this.registry = token.load(_LABEL);
+}
+
 /**
  * @description
  * Insert into registry the model that are a instance of CollectionModel.
@@ -200,29 +232,8 @@ function register(models) {
     });
 }
 
-function getIdByLabel(label, callback) {
-    var coll = this.registry.find((collection) => {
-        return collection.getLabel() === label;        
-    });
-    
-    if (coll == undefined) {
-        callback(new MaapError(18000));
-    } else {
-        callback(undefined, coll.getId());
-    }
+function saveEnvironment(token) {
+    token.save(_LABEL, this.registry);
 }
-
-function compareCollectionWeight(a, b) {
-    var aw = a.getWeight();
-    var bw = b.getWeight();
-
-    if (aw < bw) {
-	return -1;
-    }
-    if (aw > bw) {
-	return 1;
-    }
-    return 0;
-};
 
 module.export = CollectionEngine;
