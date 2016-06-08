@@ -13,8 +13,8 @@ var CellModel = function (params, connection) {
         ["type", "label", "value"],
         function (param) {
             throw new MaapError(
-            8000,
-            `Required parameter \'${param}\' in \'${this.toString()}\'`
+                8000,
+                `Required parameter \'${param}\' in \'${this.toString()}\'`
             );
         }
     );
