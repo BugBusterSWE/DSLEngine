@@ -30,6 +30,14 @@ TransmissionNode.prototype.emitLoad = function (models) {
     this.emit("load", models);
 };
 
+TransmissionNode.prototype.emitEjectToken = function (token) {
+    this.emit("rejectToken", token);
+};
+
+TransmissionNode.prototype.emitPushToken = function (token) {
+    this.emit("pushToken", token);
+}
+
 /**
  * @description
  * Alert the client that the model is receved.
@@ -42,8 +50,16 @@ TransmissionNode.prototype.finish = function (listener) {
     return this.removeListener("reply", listener);
 };
 
+TransmissionNode.prototype.onPushToken = function (listener) {
+    return this.on("pushToken", listener)
+};
+
 TransmissionNode.prototype.onReply = function (listener) {
     return this.on("reply", listener);
+};
+
+TransmissionNode.prototype.onEjectToken = function (listener) {
+    return this.on("rejectToken", listener);
 };
 
 /**
