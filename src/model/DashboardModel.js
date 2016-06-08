@@ -46,6 +46,10 @@ DashboardModel.prototype.getReferenceMatrix = function () {
     return this.rows;
 };
 
+DashboardModel.prototype.setReferenceMatrix = function (matrix) {
+    this.rows = matrix;
+}
+
 DashboardModel.prototype.push = function (column) {
     this.rows.push(column);
 };

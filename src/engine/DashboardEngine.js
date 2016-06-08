@@ -7,7 +7,10 @@ var DashboardEngine = function (node) {
     this.registry = {};
     this.node = node;
     
-    this.node.onLoad(register.bind(this));
+    this.register = register;
+    this.replaceLabelWithId = replaceLabelWithId;
+    
+    this.node.onLoad(this.register);
 }
 
 DashboardEngine.prototype.getDashboard = function (id) {
@@ -17,57 +20,40 @@ DashboardEngine.prototype.getDashboard = function (id) {
         if (dashboard == undefined) {
             reject(new MaapError(18000));
         } else {
-            resolve(dashboard.getReferenceMatrix());
+            resolve({
+                id: id,
+                label: dashboard.getLabel();
+                content: dashboard.getReferenceMatrix()
+            });
         }
     });
 };
 
-function replaceWithId(matrix) {
-    matrix.forEach((column) => {
-        column.forEach((reference) => {
-            if (reference.type === "cell") {
-                this.token.emit(
-                    "getIdCellByLabel",
-                    reference.label,
-                    (err, id) => {
-                        if (err) {
-                            throw err;
-                        } else {
-                            reference.id = id;
-                            delete reference.label;
-                        }
-                    }
-                )
-            } else if (reference.type === "collection") {
-                this.token.emit(
-                    "getIdCollectionByLabel",
-                    reference.label,
-                    (err, id) => {
-                        if (err) {
-                            throw err;
-                        } else {
-                            reference.id = id;
-                            delete reference.label;
-                        }
-                    }
-                )
-            } else if (reference.type === "document") {
-                this.token.emit(
-                    "getIdDocumentByLabel",
-                    reference.label,
-                    (err, id) => {
-                        if (err) {
-                            throw err;
-                        } else {
-                            reference.id = id;
-                            delete reference.label;
-                        }
-                    }
-                )
+function replaceLabelWithId(reference) {
+    var idAndType = {
+        type: reference.type,
+        id: String 
+    };
+        
+    return new Promise((resolve, reject) => {
+        var getId = (err, id) => {
+            if (err) {
+                reject(err);
+            } else {
+                idAndType.id = id;
+                resolve(idAndType);
             }
-        }); 
+        };
+        
+        if (reference.type === "cell") {
+            this.token.emit("getIdCellByLabel", reference.label, getId);
+        } else if (reference.type === "collection") {
+            this.token.emit("getIdCollectionByLabel", reference.label, getId);
+        } else if (reference.type === "document") {
+            this.token.emit("getIdDocumentByLabel", reference.label, getId);
+        }
     });
-}
+};
 
 /**
  * @description
@@ -80,16 +66,41 @@ function replaceWithId(matrix) {
 function register(models) {
     models.forEach((model) => {
         if (model instanceof DashboardModel) {
-            try {
-                this.replaceWithId(model.getReferenceMatrix());
-                this.registry[model.getId()] = model;
+            var matrix = model.getReferenceMatrix();
+            var promiseMatrix = [];
+            var validMatrix = [];
+            var errors = [];
+            var ready = Promise.resolve(null);
+            
+            matrix.forEach((vector) => {
+                promiseMatrix.push(vector.map(this.replaceLabelWithId));    
+            });
+
+            promiseMatrix.forEach((promiseVector) => {
+                var coll = [];
+                validMatrix.push(coll);
                 
-                this.token.emitReply();
-            } catch (err) {
-                this.token.emitReply({
-                    err: err
-                });
-            }
+                promiseVector.forEach((promise) => {
+                    ready = ready.then(()=>{
+                        return promise
+                    }).then((val) => {
+                        coll.push(val);    
+                    }).catch((err) => {
+                        errors.push(err);
+                    });
+                }) 
+            });
+            
+            ready.then(() => {
+                if (errors.length > 0) {
+                    this.node.emitReply(errors);
+                } else {
+                    model.setReferenceMatrix(validMatrix);
+                    
+                    this.registry[model.getId()] = model;
+                    this.node.emitReply();
+                }
+            });
         }
     });
 }

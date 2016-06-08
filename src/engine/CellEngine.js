@@ -8,6 +8,7 @@ var CellEngine = function (node) {
     this.node = node;
 
     this.node.onLoad(register.bind(this));
+    this.node.on("getIdCellByLabel", getIdByLabel.bind(this));
 };
 
 /**
@@ -40,12 +41,23 @@ CellEngine.prototype.getValue = function (id) {
 
 function register(models) {
     models.forEach((model) => {
-	if (model instanceof CellModel) {
-	    this.registry[model.getId()] = model;
-	    this.node.emitReply();
-	}
+        if (model instanceof CellModel) {
+            this.registry[model.getId()] = model;
+            this.node.emitReply();
+        }
     });
 }
 
-module.exports = CellEngine;
+function getIdByLabel(label, callback) {
+    var c = this.registry.find((cell) => {
+        return cell.getIdByLabel() === label;
+    });
+    
+    if (c == undefined) {
+        callback(new MaapError(18000));
+    } else {
+        callback(undefined, coll.getId());
+    }
+}
 
+module.exports = CellEngine;

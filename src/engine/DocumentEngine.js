@@ -7,6 +7,7 @@ var DocumentEngine = function (node) {
     this.node = node;
     
     this.node.onLoad(registry.bind(this));
+    this.node.on("getIdDocumentById", getIdByLabel.bind(this));
 };
 
 /**
@@ -107,6 +108,18 @@ DSLEngine.prototype.getShowPage = function (id, documentId) {
 	}
     });
 };
+
+function getIdByLabel(label, callback) {
+    var doc = this.registry.find((document) => {
+        return document.getLabel() === label;    
+    });
+    
+    if (doc === undefined) {
+        callback(new MaapError(18000));
+    } else {
+        callback(undefined, doc.getId());
+    }
+}
 
 function register(models) { 
     models.forEach((model) => {
