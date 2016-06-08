@@ -1,4 +1,6 @@
 var CollectionModel = require("../model/CollectionModel");
+var AttributeReader = require("../utils/AttributeReader");
+
 
 /**
  */
@@ -7,6 +9,7 @@ var CollectionEngine = function (node) {
     this.node = node;
 
     this.node.onLoad(register.bind(this));
+    this.node.on("getIdCollectionByLabel", getIdByLabel.bind(this));
 };
 
 /**
@@ -184,8 +187,8 @@ CollectionEngine.prototype.list = function () {
  * @description
  * Insert into registry the model that are a instance of CollectionModel.
  * In registry, the model to be index with the id of the collection.
- * @param status {{models: Model[]}} 
- * Token's status
+ * @param models {Model[]} 
+ * Models loaded 
  */
 function register(models) { 
     models.forEach((model) => {
@@ -195,6 +198,18 @@ function register(models) {
             this.node.emitReply();
         }
     });
+}
+
+function getIdByLabel(label, callback) {
+    var coll = this.registry.find((collection) => {
+        return collection.getLabel() === label;        
+    });
+    
+    if (coll == undefined) {
+        callback(new MaapError(18000));
+    } else {
+        callback(undefined, coll.getId());
+    }
 }
 
 function compareCollectionWeight(a, b) {

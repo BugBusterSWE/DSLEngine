@@ -1,4 +1,6 @@
 var DocumentModel = require("../model/DocumentModel");
+var AttributeReader = require("../utils/AttributeReader");
+
 
 var DocumentEngine = function (node) {
     this.registry = [];

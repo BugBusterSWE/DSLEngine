@@ -42,8 +42,8 @@ DashboardModel.prototype.getLabel = function () {
     return this.label;  
 };
 
-DashboardModel.prototype.model = function (x, y) {
-    return this.rows[x][y];
+DashboardModel.prototype.getReferenceMatrix = function () {
+    return this.rows;
 };
 
 DashboardModel.prototype.push = function (column) {

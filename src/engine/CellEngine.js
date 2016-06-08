@@ -1,4 +1,5 @@
 var CellModel = require("../model/CellModel");
+var AttributeReader = require("../utils/AttributeReader");
 
 /**
  */
