@@ -1,6 +1,7 @@
 
 /**
- * Exception throw when a token is request but the engine isn't connect with a db
+ * Exception throw when a token is request but the engine isn't connect with a 
+ * db
  * 
  * @history
  * | Name | Action performed | Date |
