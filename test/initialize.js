@@ -13,8 +13,10 @@ describe("Token", () => {
     });
 
     describe("#createAToken", () => {
-	var token = engine.generateToken(connection);
-	chai.expect(token).to.not.undefined;
+	it("should return a not undefined token", () => {
+	    var token = engine.generateToken(connection);
+	    chai.expect(token).to.not.undefined;
+	});
     });
 });
 

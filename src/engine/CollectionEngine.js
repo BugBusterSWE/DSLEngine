@@ -236,4 +236,5 @@ function saveEnvironment(token) {
     token.save(_LABEL, this.registry);
 }
 
-module.export = CollectionEngine;
+module.exports = CollectionEngine;
+
