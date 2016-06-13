@@ -1,3 +1,6 @@
+# environment
+.env
+
 # npm modules
 node_modules/
 
