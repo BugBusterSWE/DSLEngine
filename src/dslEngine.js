@@ -6,6 +6,9 @@ var TransmissionNode = require("./transmissionNode");
 var LoadModelsProtocol = require("./protocol/loadModelsProtocol")
 var NoConnectionEstabilished = require("./utils/noConnectionEstabilished");
 var NoTokenConnectedException = require("./utils/noTokenConnectedException");
+var TokenAlreadyInsertException = require(
+    "./utils/tokenAlreadyInsertException"
+);
 var CellEngine = require("./engine/CellEngine");
 var CollectionEngine = require("./engine/CollectionEngine");
 var DashboardEngine = require("./engine/DashboardEngine");
