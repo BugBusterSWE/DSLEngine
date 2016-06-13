@@ -5,6 +5,10 @@ var Token = require("./token");
 var TransmissionNode = require("./transmissionNode");
 var LoadModelsProtocol = require("./protocol/loadModelsProtocol")
 var NoConnectionEstabilished = require("./utils/noConnecionEstabilished");
+var CellEngine = require("./engine/CellEngine");
+var CollectionEngine = require("./engine/CollectionEngine");
+var DashboardEngine = require("./engine/DashboardEngine");
+var DocumentEngine = require("./engine/DocumentEngine");
 
 /**
  * Core class, it keep manage the connesion with MongoDB and run the DSL passed 
@@ -24,15 +28,36 @@ var NoConnectionEstabilished = require("./utils/noConnecionEstabilished");
 var DSLEngine = function () {
     this.strategy = new DslConcreteStrategy();
     this.node = new TransmissionNode();
+    
+    this.cellEngine = new CellEngine(this.node);
+    this.collectionEngine = new CollectionEngine(this.node);
+    this.dashboardEngine = new DashboardEngine(this.node);
+    this.documentEngine = new DocumentEngine(this.node);
+    
+    this.token = undefined;
+};
+
+/**
+ * @description 
+ * Remove the token from engine emit an event to save the engines' environment,
+ * so when the token is repush, the engines can take the data stored into it.
+ * @return {Token}
+ * The token push into the engine.
+ */
+DSLEngine.prototype.ejectSafelyToken = function () {
+    var token = this.token;
+    this.token = undefined;
+    
+    this.node.emitEjectToken(token);
+    return token;
 };
 
 /**
  * @description
- * Create a ready token to comunicate with the engine. The DSLEngine to must connect
- * with a db to create the token, otherwise the NoConnectionEstabilished exception is 
- * throw.
+ * Create a token to comunicate with the engine. The token is not directly 
+ * connect to the engine, and is needed call `pushToken` method to make.
  * @return {Token}
- * A token connected with this engine.
+ * A token connected with this database passed by argument.
  */
 DSLEngine.prototype.generateToken = function (db) {
     return new Token(db);
@@ -40,19 +65,23 @@ DSLEngine.prototype.generateToken = function (db) {
 
 /**
  * @description
- * Load the dsl into the token passed by argument. Use this method if you want load new dsl 
- * model in a previous token.
+ * Load the dsl into the token passed by argument. Use this method if you want 
+ * load new dsl model in a previous token.
  * @param dsl {string}
  * The code of the dsl
  * @param token {Token} 
  * The token where to be store the dsl. 
  * @return {Promise<void>}
- * @throws {MaaPError}
+ * @throws {NoTokenConnectedException}
  */
-DSLEngine.prototype.loadDSL = function (dsl, token) {
+DSLEngine.prototype.loadDSL = function (dsl) {
+    if (this.token == undefined) {
+        throw NoTokenConnectedException();
+    }
+    
     return new Promise((resolve, reject) => {
         try {
-            var models = this.strategy.load(dsl, token.getConnection());
+            var models = this.strategy.load(dsl, this.token.getConnection());
         } catch (err) {
             // Catch the loading error
             reject(err);
@@ -71,6 +100,18 @@ DSLEngine.prototype.loadDSL = function (dsl, token) {
         
         this.node.emitLoad(models);
     });
+};
+
+/**
+ * @description
+ * Connect the token with the engine to perform action of save, load model and
+ * environment.
+ * @param token {Token}
+ * Token to store the envirnoment.
+ */
+DSLEngine.prototype.pushToken = function (token) {
+    this.token = token;
+    this.node.emitPushToken(token);
 };
 
 module.exports = DSLEngine;
