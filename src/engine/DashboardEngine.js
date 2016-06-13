@@ -26,7 +26,7 @@ DashboardEngine.prototype.getDashboard = function (id) {
         } else {
             resolve({
                 id: id,
-                label: dashboard.getLabel();
+                label: dashboard.getLabel(),
                 content: dashboard.getReferenceMatrix()
             });
         }

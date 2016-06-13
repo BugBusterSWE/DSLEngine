@@ -26,7 +26,7 @@ var CollectionEngine = function (node) {
  * The promise is reject with a MaapError if an error has been occurred, 
  * otherwise it is resolve with nothing.
  */
-Collection.prototype.deleteDocument = function (id, documentId) {
+CollectionEngine.prototype.deleteDocument = function (id, documentId) {
     var collection = this.registry[id];
     
     return new Promise((resolve, reject) => {

@@ -22,7 +22,7 @@ var DocumentEngine = function (node) {
  * The promise is reject with a MaapError if an error has been occurred, 
  * otherwise it is resolve with nothing.
  */
-DSLEngine.prototype.deleteDocument = function (id, documentId) {
+DocumentEngine.prototype.deleteDocument = function (id, documentId) {
     var documentModel = this.registry[id];
 
     return new Promise((resolve, reject) => {
@@ -58,7 +58,7 @@ DSLEngine.prototype.deleteDocument = function (id, documentId) {
  * The promise is resolve with the up-to-date data and it is reject with a 
  * MaapError if a error is occurred.
  */
-DSLEngine.prototype.editDocument = function (id, content) {
+DocumentEngine.prototype.editDocument = function (id, content) {
     var documentModel = this.registry[id];
 
     return new Promise((resolve, reject) => {
@@ -90,7 +90,7 @@ DSLEngine.prototype.editDocument = function (id, content) {
  * The promise for the informations to build the Show Page. The promise is 
  * resolve with an ShowPage, otherwise it is reject with a MaapError.
  */
-DSLEngine.prototype.getShowPage = function (id, documentId) {
+DocumentEngine.prototype.getShowPage = function (id, documentId) {
     var documentModel = this.registry[id];
     
     return new Promise((resolve, reject) => {
