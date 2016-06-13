@@ -5,6 +5,7 @@ var Token = require("./token");
 var TransmissionNode = require("./transmissionNode");
 var LoadModelsProtocol = require("./protocol/loadModelsProtocol")
 var NoConnectionEstabilished = require("./utils/noConnecionEstabilished");
+var NoTokenConnectedException = require("./utils/noTokenConnectedException");
 var CellEngine = require("./engine/CellEngine");
 var CollectionEngine = require("./engine/CollectionEngine");
 var DashboardEngine = require("./engine/DashboardEngine");
@@ -35,6 +36,38 @@ var DSLEngine = function () {
     this.documentEngine = new DocumentEngine(this.node);
     
     this.token = undefined;
+};
+
+DSLEngine.prototype.cell = function () {
+    if (this.token == undefined) {
+        throw new NoTokenConnectedException();
+    }
+    
+    return this.cellEngine;
+};
+
+DSLEngine.prototype.collection = function () {
+    if (this.token == undefined) {
+        throw new NoTokenConnectedException();
+    }
+    
+    return this.collectionEngine;
+};
+
+DSLEngine.prototype.dashboardEngine = function () {
+    if (this.token == undefined) {
+        throw new NoTokenConnectedException();
+    }
+    
+    return this.dashboardEngine;
+};
+
+DSLEngine.prototype.documentEngine = function () {
+    if (this.token == undefined) {
+        throw new NoTokenConnectedException();
+    }
+    
+    return this.documentEngine;
 };
 
 /**
@@ -76,7 +109,7 @@ DSLEngine.prototype.generateToken = function (db) {
  */
 DSLEngine.prototype.loadDSL = function (dsl) {
     if (this.token == undefined) {
-        throw NoTokenConnectedException();
+        throw new NoTokenConnectedException();
     }
     
     return new Promise((resolve, reject) => {
@@ -110,8 +143,13 @@ DSLEngine.prototype.loadDSL = function (dsl) {
  * Token to store the envirnoment.
  */
 DSLEngine.prototype.pushToken = function (token) {
+    if (this.token != undefined) {
+	throw new TokenAlreadyInsertException();
+    }
+    
     this.token = token;
     this.node.emitPushToken(token);
 };
 
 module.exports = DSLEngine;
+
