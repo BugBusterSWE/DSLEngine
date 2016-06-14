@@ -1,0 +1,4 @@
+collection () {
+    index() {
+    }
+}

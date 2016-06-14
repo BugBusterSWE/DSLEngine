@@ -1,27 +1,24 @@
-var mongoose = require("mongoose");
 var chai = require("chai");
-chai.use(require("chai-as-promised"));
 
 var DSLEngine = require("../src/dslEngine");
 var TokenAlreadyInsertException = require(
     "../src/utils/tokenAlreadyInsertException"
 );
+var NoTokenConnectedException = require(
+    "../src/utils/noTokenConnectedException"
+);
 
 describe("Token", () => {
     var engine;
     var token;
-    var connection;
 
     before(() => {
 	   engine = new DSLEngine();
     });
 
-    describe("#createAToken", () => {
+    describe("#createToken", () => {
         it("should return a not undefined token", () => {
-            token = engine.generateToken(mongoose.createConnection(
-                `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
-            ));
-            
+            token = engine.generateToken(undefined);
             chai.expect(token).to.not.undefined;
         });
     });
@@ -41,7 +38,19 @@ describe("Token", () => {
 	       );
 	   });
     });
-
     
+    describe("#removeToken", () => {
+        it("shoud return the same token", () => {
+            chai.expect(engine.ejectSafelyToken()).to.equal(token);
+        });
+    });
+    
+    describe("#removeTokenOneOtherTime", () => {
+        it("shoud throw exception NoTokenConnectedException", () => {
+            chai.expect(engine.ejectSafelyToken.bind(engine)).to.throw(
+                NoTokenConnectedException
+            );
+        });   
+    });
 });
 
