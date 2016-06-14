@@ -81,6 +81,10 @@ DSLEngine.prototype.documentEngine = function () {
  * The token push into the engine.
  */
 DSLEngine.prototype.ejectSafelyToken = function () {
+    if (this.token == undefined) {
+        throw new NoTokenConnectedException();
+    }
+    
     var token = this.token;
     this.token = undefined;
     
