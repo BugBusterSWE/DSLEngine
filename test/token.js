@@ -13,15 +13,17 @@ describe("Token", () => {
     var connection;
 
     before(() => {
-	   console.log(process.env.npm_package_config_CONNECTION);
 	   engine = new DSLEngine();
     });
 
     describe("#createAToken", () => {
-	   it("should return a not undefined token", () => {
-            token = engine.generateToken(mongoose.createConnection(null));
-	       chai.expect(token).to.not.undefined;
-	   });
+        it("should return a not undefined token", () => {
+            token = engine.generateToken(mongoose.createConnection(
+                `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
+            ));
+            
+            chai.expect(token).to.not.undefined;
+        });
     });
 
     describe("#insertToken", () => {
