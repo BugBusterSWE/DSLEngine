@@ -3,6 +3,7 @@ language:
 node_js:
 - 4.4.3
 script:
+- npm set dslengine:CONNECTION $CONNECTION 
 - npm test
 notifications:
   slack:

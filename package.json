@@ -3,6 +3,9 @@
   "version": "1.0.1",
   "description": "Engine to run DSL defined in the MaaP application",
   "main": "src/dslEngine.js",
+  "config": {
+    "CONNECTION": null  
+  },
   "scripts": {
     "test": "mocha test/**/*.js"
   },
@@ -30,7 +33,6 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
-    "mocha": "^2.4.5",
-    "node-env-file": "^0.1.8"
+    "mocha": "^2.4.5"
   }
 }
