@@ -68,7 +68,7 @@ DslConcreteStrategy.prototype.load = function(content, connection) {
 	vm.runInNewContext(out.code, {
 	    registerModel: registerModel,
 	    require: require,
-	    connection: connection,
+	    db: connection,
 	    CollectionModel: CollectionModel,
 	    IndexModel: IndexModel,
 	    ShowModel: ShowModel,
@@ -76,7 +76,7 @@ DslConcreteStrategy.prototype.load = function(content, connection) {
 	    Column: Column
 	});
     } catch(err) {
-	throw new MaapError(err);
+	throw err;
     }
 
     return models;
