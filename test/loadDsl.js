@@ -12,6 +12,8 @@ var TokenAlreadyInsertException = require(
 var NoTokenConnectedException = require(
     "../src/utils/noTokenConnectedException"
 );
+var NoNameException = require("../src/utils/noNameException");
+var NoLabelException = require("../src/utils/noLabelException");
 
 describe("LoadDSL", () => {
     var engine;
@@ -20,23 +22,28 @@ describe("LoadDSL", () => {
     before(() => {
         engine = new DSLEngine();
         token = engine.generateToken(mongoose.createConnection(
-            null
-            /*`mongodb://${process.env.npm_package_config_CONNECTION}/prova`*/
+            `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
         ));
         
         engine.pushToken(token);
     });
     
-    describe("#loadSingleCollectionEmpy", () => {
+    describe("#loadSingleCollectionEmpty", () => {
         it("should load the collection without errors", () => {
-            var dsl = `collection () {}`;
+            var dsl = `collection (
+		label: "Per_te"
+	    ) {}`;
 
             var promise = engine.loadDSL(dsl);
             
-            promise.then(() => {
+            return promise.then(() => {
                 console.log("Fatto");
             }).catch((err) => {
-                console.log(err);
+		if (err instanceof NoNameException) {
+		    console.log("Etichetta nome mancante");
+		} else if (err instanceof NoLabelException) {
+		    console.log("Etichetta label mancante");
+		}
             })
             
         });
