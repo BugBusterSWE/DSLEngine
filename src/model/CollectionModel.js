@@ -24,7 +24,8 @@ var AttributeReader = require("../utils/AttributeReader");
 var DocumentSchema = require("./DocumentSchema");
 var ShowModel = require("./ShowModel");
 var IndexModel = require("./IndexModel");
-var MaapError = require("../utils/MaapError");
+var NoNameException = require("../utils/noNameException");
+var NoLabelException = require("../utils/noLabelException");
 
 var CollectionModel = function(params, connection) {
     var self = this;
@@ -36,8 +37,12 @@ var CollectionModel = function(params, connection) {
     this.indexModel = new IndexModel({}, this);
 
     // Leggi i parametri obbligatori e opzionali
-    AttributeReader.readRequiredAttributes(params, this, ["name", "label"], function(param){
-	throw new MaapError(8000, "Required parameter '" + param + "' in collection '" + self.toString() + "'");
+    AttributeReader.readRequiredAttributes(params, this, ["label", "name"], function(param){
+	if (param === "name") {
+	    throw new NoNameException(self);
+	} else {
+	    throw new NoLabelException("Collection");
+	}
     });
 
     AttributeReader.readOptionalAttributes(params, this, ["weight"]);
