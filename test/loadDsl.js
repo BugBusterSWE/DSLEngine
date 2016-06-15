@@ -1,5 +1,6 @@
 require("./token.js");
 
+const fs = require("fs");
 var mongoose = require("mongoose");
 var chai = require("chai");
 chai.use(require("chai-as-promised"));
@@ -19,14 +20,24 @@ describe("LoadDSL", () => {
     before(() => {
         engine = new DSLEngine();
         token = engine.generateToken(mongoose.createConnection(
+            null
             /*`mongodb://${process.env.npm_package_config_CONNECTION}/prova`*/
         ));
         
         engine.pushToken(token);
     });
     
-    describe("#prova", () => {
-        it("ok", () => {
+    describe("#loadSingleCollectionEmpy", () => {
+        it("should load the collection without errors", () => {
+            var dsl = `collection () {}`;
+
+            var promise = engine.loadDSL(dsl);
+            
+            promise.then(() => {
+                console.log("Fatto");
+            }).catch((err) => {
+                console.log(err);
+            })
             
         });
     });
