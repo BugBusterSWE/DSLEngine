@@ -14,6 +14,10 @@ var Token = function (db) {
     this.db = db;
 };
 
+Token.prototype.getConnection = function () {
+    return this.db;
+};
+
 Token.prototype.load = function (name) {
     return this.store[name];
 };
@@ -23,4 +27,3 @@ Token.prototype.save = function (name, payload) {
 };
 
 module.exports = Token;
-
