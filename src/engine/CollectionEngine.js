@@ -6,7 +6,7 @@ var _LABEL = "collection";
 /**
  */
 var CollectionEngine = function (node) {
-    this.booking = {};
+    this.registry = {};
     this.node = node;
     
     this.node.onLoad(register.bind(this));
@@ -27,7 +27,7 @@ var CollectionEngine = function (node) {
  * otherwise it is resolve with nothing.
  */
 CollectionEngine.prototype.deleteDocument = function (id, documentId) {
-    var collection = this.booking[id];
+    var collection = this.registry[id];
     
     return new Promise((resolve, reject) => {
 	if (!collection) {
@@ -64,7 +64,7 @@ CollectionEngine.prototype.deleteDocument = function (id, documentId) {
  * MaapError if a error is occurred.
  */
 CollectionEngine.prototype.editDocument = function (id, documentId, content) {
-    var collection = this.booking[id];
+    var collection = this.registry[id];
 
     return new Promise((resolve, reject) => {
 	if (!collection) {
@@ -88,9 +88,9 @@ CollectionEngine.prototype.editDocument = function (id, documentId, content) {
 CollectionEngine.prototype.getCollectionModels = function () {
     var models = [];
 
-    for (var id in this.booking) {
-	if (this.booking.hasOwnProperty(id)) {
-	    models.push(this.booking[id]);
+    for (var id in this.registry) {
+	if (this.registry.hasOwnProperty(id)) {
+	    models.push(this.registry[id]);
 	}
     }
 
@@ -115,7 +115,7 @@ CollectionEngine.prototype.getCollectionModels = function () {
  * resolve with an IndexPage, otherwise it is reject with a MaapError.
  */
 CollectionEngine.prototype.getIndexPage = function (id, option) {
-    var collection = this.booking[id];
+    var collection = this.registry[id];
     
     return new Promise((resolve, reject) => {
 	if (collection) {
@@ -150,7 +150,7 @@ CollectionEngine.prototype.getIndexPage = function (id, option) {
  * resolve with an ShowPage, otherwise it is reject with a MaapError.
  */
 CollectionEngine.prototype.getShowPage = function (id, documentId) {
-    var collection = this.booking[id];
+    var collection = this.registry[id];
     
     return new Promise((resolve, reject) => {
 	if (!collection) {
@@ -199,7 +199,7 @@ function compareCollectionWeight(a, b) {
 };
 
 function getIdByLabel(label, callback) {
-    var coll = this.booking.find((collection) => {
+    var coll = this.registry.find((collection) => {
         return collection.getLabel() === label;        
     });
     
@@ -212,7 +212,7 @@ function getIdByLabel(label, callback) {
 
 function loadEnvironment(token) {
     if (token.load(_LABEL) != undefined) {
-	this.booking = token.load(_LABEL);
+	this.registry = token.load(_LABEL);
     }
 }
 
@@ -226,8 +226,8 @@ function loadEnvironment(token) {
 function register(models) { 
     models.forEach((model) => {
         if (model instanceof CollectionModel) {
-            this.booking[model.getId()] = model;
-	    console.log(this.booking);
+            this.registry[model.getId()] = model;
+	    console.log(this.registry);
             // Right model register with success
             this.node.emitReply();
         }
@@ -235,7 +235,7 @@ function register(models) {
 }
 
 function saveEnvironment(token) {
-    token.save(_LABEL, this.booking);
+    token.save(_LABEL, this.registry);
 }
 
 module.exports = CollectionEngine;
