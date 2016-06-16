@@ -34,7 +34,11 @@ DashboardEngine.prototype.getDashboard = function (id) {
 };
 
 function loadEnvironment(token) {
-    this.registry = token.load(_LABEL);
+    var loadModules = token.load(_LABEL);
+
+    if (loadModules != undefined) {
+	this.registry = loadModules;
+    }
 }
 
 function replaceLabelWithId(reference) {
@@ -118,3 +122,18 @@ function saveEnvironment(token) {
 }
 
 module.exports = DashboardEngine;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
