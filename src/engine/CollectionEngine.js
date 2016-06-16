@@ -6,9 +6,9 @@ var _LABEL = "collection";
 /**
  */
 var CollectionEngine = function (node) {
-    this.registry = {};
+    this.booking = {};
     this.node = node;
-
+    
     this.node.onLoad(register.bind(this));
     this.node.onEjectToken(saveEnvironment.bind(this));
     this.node.onPushToken(loadEnvironment.bind(this));
@@ -27,7 +27,7 @@ var CollectionEngine = function (node) {
  * otherwise it is resolve with nothing.
  */
 CollectionEngine.prototype.deleteDocument = function (id, documentId) {
-    var collection = this.registry[id];
+    var collection = this.booking[id];
     
     return new Promise((resolve, reject) => {
 	if (!collection) {
@@ -64,7 +64,7 @@ CollectionEngine.prototype.deleteDocument = function (id, documentId) {
  * MaapError if a error is occurred.
  */
 CollectionEngine.prototype.editDocument = function (id, documentId, content) {
-    var collection = this.registry[id];
+    var collection = this.booking[id];
 
     return new Promise((resolve, reject) => {
 	if (!collection) {
@@ -88,9 +88,9 @@ CollectionEngine.prototype.editDocument = function (id, documentId, content) {
 CollectionEngine.prototype.getCollectionModels = function () {
     var models = [];
 
-    for (var id in this.registry) {
-	if (this.registry.hasOwnProperty(id)) {
-	    models.push(this.modelRegistry[id]);
+    for (var id in this.booking) {
+	if (this.booking.hasOwnProperty(id)) {
+	    models.push(this.booking[id]);
 	}
     }
 
@@ -115,7 +115,7 @@ CollectionEngine.prototype.getCollectionModels = function () {
  * resolve with an IndexPage, otherwise it is reject with a MaapError.
  */
 CollectionEngine.prototype.getIndexPage = function (id, option) {
-    var collection = this.registry[id];
+    var collection = this.booking[id];
     
     return new Promise((resolve, reject) => {
 	if (collection) {
@@ -138,8 +138,7 @@ CollectionEngine.prototype.getIndexPage = function (id, option) {
     });
 };
 
-/** order: "DefaultSortOrder",
-        query: CollectionQuer
+/** 
  * @description
  * Query the dabase to get the information to build the Show Page.
  * @param collectionId {string}
@@ -151,7 +150,7 @@ CollectionEngine.prototype.getIndexPage = function (id, option) {
  * resolve with an ShowPage, otherwise it is reject with a MaapError.
  */
 CollectionEngine.prototype.getShowPage = function (id, documentId) {
-    var collection = this.registry[id];
+    var collection = this.booking[id];
     
     return new Promise((resolve, reject) => {
 	if (!collection) {
@@ -200,7 +199,7 @@ function compareCollectionWeight(a, b) {
 };
 
 function getIdByLabel(label, callback) {
-    var coll = this.registry.find((collection) => {
+    var coll = this.booking.find((collection) => {
         return collection.getLabel() === label;        
     });
     
@@ -212,7 +211,9 @@ function getIdByLabel(label, callback) {
 }
 
 function loadEnvironment(token) {
-    this.registry = token.load(_LABEL);
+    if (token.load(_LABEL) != undefined) {
+	this.booking = token.load(_LABEL);
+    }
 }
 
 /**
@@ -225,7 +226,8 @@ function loadEnvironment(token) {
 function register(models) { 
     models.forEach((model) => {
         if (model instanceof CollectionModel) {
-            this.registry[model.getId()] = model;
+            this.booking[model.getId()] = model;
+	    console.log(this.booking);
             // Right model register with success
             this.node.emitReply();
         }
@@ -233,7 +235,7 @@ function register(models) {
 }
 
 function saveEnvironment(token) {
-    token.save(_LABEL, this.registry);
+    token.save(_LABEL, this.booking);
 }
 
 module.exports = CollectionEngine;
