@@ -27,25 +27,95 @@ describe("LoadDSL", () => {
         
         engine.pushToken(token);
     });
+
+    describe("#loadCollectionWithoutLabel", () => {
+	it("should throw the NoLabelException", (done) => {
+	    var dsl = `collection() {}`;
+	    
+	    engine.loadDSL(dsl)
+	    .catch((err) => {
+		chai.expect(err).to.be.instanceof(NoLabelException);
+		done();
+	    });
+	});
+    });
     
     describe("#loadSingleCollectionEmpty", () => {
-        it("should load the collection without errors", () => {
+        it("should load the collection without errors", (done) => {
             var dsl = `collection (
-		label: "Per_te"
+		name: "pluto",
+		label: "1",
+		weight: 0
 	    ) {}`;
 
-            var promise = engine.loadDSL(dsl);
-            
-            return promise.then(() => {
-                console.log("Fatto");
-            }).catch((err) => {
-		if (err instanceof NoNameException) {
-		    console.log("Etichetta nome mancante");
-		} else if (err instanceof NoLabelException) {
-		    console.log("Etichetta label mancante");
+            engine.loadDSL(dsl)
+	    .then(() => {
+		return done();
+	    }).catch((err) => {
+		return done(errs);
+	    });
+	});
+    });
+
+    describe("#loadCollectionWithIndex", () => {
+	it("should load the collection without errors", (done) => {
+	    var dsl = `collection (
+		name: "pippo",
+		label: "2"
+	    ) {
+		index (
+		    query: {},
+		) {}
+	    }`;
+
+	    engine.loadDSL(dsl)
+	    .then(() => {
+		return done();
+	    }).catch((err) => {
+		return done(err);
+	    });
+	});
+    });
+
+    // TODO
+    describe("#loadCollectionWitShow", () => {
+	it("should load the collection without errors", (done) => {
+	    var dsl = `collection (
+		name: "pippo",
+		label: "3"
+	    ) {
+		show () {}
+	    }`;
+
+	    engine.loadDSL(dsl)
+	    .then(() => {
+		return done();
+	    }).catch((err) => {
+		return done(err);
+	    });
+	});
+    });
+
+    describe("#loadCollectionWithIndexColumn", () => {
+	it("should load the collection without errors", (done) => {
+	    var dsl = `collection (
+		name: "pippo",
+		label: "4"
+	    ) {
+		index() {
+		    column (
+			name: "Ecco",
+			prova: 3
+		    )
 		}
-            })
-            
-        });
+	    }`;
+
+	    engine.loadDSL(dsl)
+	    .then(() => {
+		return done();
+	    }).catch((err) => {
+		return done(err);
+	    });
+	});
     });
 });
