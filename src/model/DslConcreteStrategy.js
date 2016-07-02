@@ -25,10 +25,10 @@
 
 var SweetjsCompiler = require("sweetjs-compiler");
 var fs = require("fs");
-var MaapError = require("../utils/MaapError.js");
 var vm = require("vm");
 
 var CollectionModel = require("./CollectionModel");
+var DSLSyntaxException = require("../utils/dslSyntaxException");
 var IndexModel = require("./IndexModel");
 var ShowModel = require("./ShowModel");
 var Row = require("./Row");
@@ -54,8 +54,7 @@ DslConcreteStrategy.prototype.load = function(content, connection) {
     try {
 	out = this.sweetjs.compile(content);
     } catch(err) {
-	errback(new MaapError(err));
-	return;
+	throw new DSLSyntaxException(err);
     }
 
     var models = [];
