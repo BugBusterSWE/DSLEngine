@@ -17,7 +17,8 @@
 
 var AttributeReader = require("../utils/AttributeReader");
 var Column = require("./Column");
-var MaapError = require("../utils/MaapError");
+var RequiredParamException = require("../utils/requiredParamException");
+var UnexpectedParamException = require("../utils/unexpectedParamException");
 var ObjectUtils = require("./ObjectUtils");
 
 var IndexModel = function(params, parent) {
@@ -40,10 +41,7 @@ var IndexModel = function(params, parent) {
 
     // Leggi i parametri obbligatori
     AttributeReader.readRequiredAttributes(params, this, [], function(param){
-        throw new MaapError(
-            14000, 
-            `Required parameter \'${param}\' in index of \'${self.parent.toString()}\'`
-        );
+	throw new RequiredParamException(this, param);
     });
 
     // Leggi i parametri opzionali
@@ -51,10 +49,7 @@ var IndexModel = function(params, parent) {
 
     // Verifica che i parametri non siano vuoti
     AttributeReader.assertEmptyAttributes(params, function(param) {
-        throw new MaapError(
-            14000, 
-            `Unexpected parameter \'${param}\' in index of \'${self.parent.toString()}\'`
-        );
+	throw new UnexpectedParamException(this, param);
     });
 
     // Valori di default
@@ -64,10 +59,7 @@ var IndexModel = function(params, parent) {
 
     // Verifico che query sia un oggetto
     if (typeof this.query !== 'object') {
-        throw new MaapError(
-            14000, 
-            `Unexpected value of param 'query' in index of \'${self.parent.toString()}\', 'object' required, got \'${typeof this.query}\'`
-        );
+	throw new UnexpectedParamException(this, 'query');
     }
 
     this.noMoreColumns();
@@ -257,7 +249,7 @@ IndexModel.prototype.getData = function(page, sortBy, order, callback, errback) 
 };
 
 IndexModel.prototype.toString = function () {
-    return this.parent.toString();
+    return `Index of ${this.parent.toString()}`;
 };
 
 module.exports = IndexModel;

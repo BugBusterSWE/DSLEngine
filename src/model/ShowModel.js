@@ -18,6 +18,8 @@
 var AttributeReader = require("../utils/AttributeReader");
 var Row = require("./Row");
 var MaapError = require("../utils/MaapError");
+var RequiredParamException = require("../utils/requiredParamException");
+var UnexpectedParamException = require("../utils/unexpectedParamException");
 var ObjectUtils = require("./ObjectUtils");
 
 var ShowModel = function(params, parent) {
@@ -29,19 +31,13 @@ var ShowModel = function(params, parent) {
     this.model = this.parent.model;
 
     // Leggi i parametri obbligatori e opzionali
-    AttributeReader.readRequiredAttributes(params, this, [], function(param){
-	throw new MaapError(
-	    13000, 
-	    `Required parameter \'${param}\' in show of \'${parent.toString()}\'`
-	);
+    AttributeReader.readRequiredAttributes(params, this, [], (param) => {
+	throw new RequiredParamException(this, param);
     });
 
     AttributeReader.readOptionalAttributes(params, this, ["populate"]);
-    AttributeReader.assertEmptyAttributes(params, function(param){
-	throw new MaapError(
-	    13000, 
-	    `Unexpected parameter \'${param}\' in the show of \'${parent.toString()}\'`
-	);
+    AttributeReader.assertEmptyAttributes(params, (param) => { 
+	throw new UnexpectedParamException(this, param);
     });
 
     this.noMoreRows();
@@ -150,7 +146,7 @@ ShowModel.prototype.updateDocument = function(
 };
 
 ShowModel.prototype.toString = function () {
-    return this.parent.toString();  
+    return `Show of ${this.parent.toString()}`;  
 };
 
 module.exports = ShowModel;

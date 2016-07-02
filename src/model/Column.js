@@ -16,80 +16,73 @@
 "use strict";
 
 var AttributeReader = require("../utils/AttributeReader");
-var MaapError = require("../utils/MaapError");
+var RequiredParamException = require("../utils/requiredParamException");
+var UnexpectedParamException = require("../utils/unexpectedParamException");
+var WrongTypeException = require("../utils/wrongTypeException");
 
 var identity = function(x) { return x; };
 
 var Column = function(params, parent) {
-	var self = this;
-	this.parent = parent;
+    var self = this;
+    this.parent = parent;
     parent.addColumn(this);
+    
+    // Valori di default
+    this.selectable = false;
+    this.sortable = false;
+    this.transformation = identity;
 
-	// Valori di default
-	this.selectable = false;
-	this.sortable = false;
-	this.transformation = identity;
+    // Leggi i parametri obbligatori e opzionali
+    AttributeReader.readRequiredAttributes(params, this, ["name"], (param) => {
+	throw new RequiredParamException(this, param);
+    });
+    AttributeReader.readOptionalAttributes(params, this, ["label", "sortable", "transformation", "selectable"]);
+    AttributeReader.assertEmptyAttributes(params, function(param){
+	throw new UnexpectedParamException(this, param);
+    });
 
-	// Leggi i parametri obbligatori e opzionali
-	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
-		throw new MaapError(
-		    15000, 
-		    `Required parameter ${param} in column ${self.toString()} of \'${parent.toString()}\'`
-		);
-	});
-	AttributeReader.readOptionalAttributes(params, this, ["label", "sortable", "transformation", "selectable"]);
-	AttributeReader.assertEmptyAttributes(params, function(param){
-		throw new MaapError(
-		    15000, 
-		    `Unexpected parameter ${param} in column \'${self.toString()}\' of \'${parent.toString()}\'`
-		);
-	});
-
-	// Valori di default
-	if (this.label === undefined) {
-		this.label = this.name;
-	}
-	
-	// Controllo dei tipi
-	if (typeof this.label !== 'string' ||
-		typeof this.name !== 'string' ||
-		typeof this.transformation !== 'function' ||
-		typeof this.selectable !== 'boolean' ||
-		typeof this.sortable !== 'boolean'
-	) {
-		throw new MaapError(
-		    15000, 
-		    `Parameter with a wrong type in column ${this.toString()} of \'${parent.toString()}\'`
-		);
-	}
+    // Valori di default
+    if (this.label === undefined) {
+	this.label = this.name;
+    }
+    
+    // Controllo dei tipi
+    if (typeof this.label !== 'string' ||
+	typeof this.name !== 'string' ||
+	typeof this.transformation !== 'function' ||
+	typeof this.selectable !== 'boolean' ||
+	typeof this.sortable !== 'boolean'
+       ) {
+	throw new WrongTypeException(this);
+    }
 };
 
 Column.prototype.getLabel = function() {
-	return this.label;
+    return this.label;
 };
 
 Column.prototype.getName = function() {
-	return this.name;
+    return this.name;
 };
 
 Column.prototype.getTransformation = function() {
-	return this.transformation;
+    return this.transformation;
 };
 
 Column.prototype.isSelectable = function() {
-	return this.selectable;
+    return this.selectable;
 };
 
 Column.prototype.isSortable = function() {
-	return this.sortable;
+    return this.sortable;
 };
 
 Column.prototype.toString = function() {
-	return this.getName();
+    return `Column ${this.getName()} of ${this.parent.toString()}`;
 };
 
 Column.prototype.setSelectable = function(selectable) {
-	this.selectable = selectable;
+    this.selectable = selectable;
 };
 
 module.exports = Column;

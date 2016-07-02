@@ -26,6 +26,7 @@ var ShowModel = require("./ShowModel");
 var IndexModel = require("./IndexModel");
 var NoNameException = require("../utils/noNameException");
 var NoLabelException = require("../utils/noLabelException");
+var UnexpectedParamException = require("../utils/unexpectedParamException");
 
 var CollectionModel = function(params, connection) {
     var self = this;
@@ -37,18 +38,23 @@ var CollectionModel = function(params, connection) {
     this.indexModel = new IndexModel({}, this);
 
     // Leggi i parametri obbligatori e opzionali
-    AttributeReader.readRequiredAttributes(params, this, ["label", "name"], function(param){
-	if (param === "name") {
-	    throw new NoNameException(self);
-	} else {
-	    throw new NoLabelException("Collection");
+    AttributeReader.readRequiredAttributes(
+	params, 
+	this, 
+	["label", "name"], 
+	function(param){
+	    if (param === "name") {
+		throw new NoNameException(self);
+	    } else {
+		throw new NoLabelException("Collection");
+	    }
 	}
-    });
+    );
 
     AttributeReader.readOptionalAttributes(params, this, ["weight"]);
 
     AttributeReader.assertEmptyAttributes(params, function(param){
-	throw new MaapError(8000, "Unexpected parameter '" + param + "' in collection '" + self.toString() + "'");
+	throw new UnexpectedParamException(this, param);
     });
     
     if (this.weight === undefined) {
