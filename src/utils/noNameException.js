@@ -10,7 +10,8 @@ var NoNameException = function (model) {
 };
 
 NoNameException.prototype.message = function () {
-    return `In the model ${this.model.toString()} the attribute 'name' is not be setted`
+    return `In the model ${this.model.toString()} the attribute 'name' is ` +
+	`not be setted`;
 };
 
 module.exports = NoNameException;

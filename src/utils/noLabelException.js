@@ -10,7 +10,7 @@ var NoLabelException = function (name) {
 };
 
 NoLabelException.prototype.message = function () {
-    return `In the model ${this.name} the attribute 'label' is not be setted`
+    return `In the model ${this.name} the attribute 'label' is not be setted`;
 };
 
 module.exports = NoLabelException;
