@@ -229,7 +229,6 @@ function register(models) {
     models.forEach((model) => {
         if (model instanceof CollectionModel) {
             this.registry[model.getId()] = model;
-	    console.log(this.registry);
             // Right model register with success
             this.node.emitReply();
         }
