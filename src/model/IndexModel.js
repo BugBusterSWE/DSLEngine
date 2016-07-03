@@ -40,7 +40,7 @@ var IndexModel = function(params, parent) {
     this.query = {};
 
     // Leggi i parametri obbligatori
-    AttributeReader.readRequiredAttributes(params, this, [], function(param){
+    AttributeReader.readRequiredAttributes(params, this, [], (param) => {
 	throw new RequiredParamException(this, param);
     });
 
@@ -48,7 +48,7 @@ var IndexModel = function(params, parent) {
     AttributeReader.readOptionalAttributes(params, this, ["perpage", "populate", "sortby", "order", "query", "populate"]);
 
     // Verifica che i parametri non siano vuoti
-    AttributeReader.assertEmptyAttributes(params, function(param) {
+    AttributeReader.assertEmptyAttributes(params, (param) => {
 	throw new UnexpectedParamException(this, param);
     });
 

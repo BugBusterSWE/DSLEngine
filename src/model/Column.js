@@ -37,7 +37,7 @@ var Column = function(params, parent) {
 	throw new RequiredParamException(this, param);
     });
     AttributeReader.readOptionalAttributes(params, this, ["label", "sortable", "transformation", "selectable"]);
-    AttributeReader.assertEmptyAttributes(params, function(param){
+    AttributeReader.assertEmptyAttributes(params, (param) => {
 	throw new UnexpectedParamException(this, param);
     });
 

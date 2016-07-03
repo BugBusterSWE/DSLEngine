@@ -16,64 +16,57 @@
 "use strict";
 
 var AttributeReader = require("../utils/AttributeReader");
-var MaapError = require("../utils/MaapError");
+var RequiredParamException = require("../utils/requiredParamException");
+var UnexpectedParamException = require("../utils/unexpectedParamException");
+var WrongTypeException = require("../utils/wrongTypeException");
 
 var identity = function(x) { return x; };
 
 var Row = function(params, parent) {
-	var self = this;
-	this.parent = parent;
+    var self = this;
+    this.parent = parent;
     this.parent.addRow(this);
-	
-	// Valori di default
-	this.transformation = identity;
+    
+    // Valori di default
+    this.transformation = identity;
 
-	// Leggi i parametri obbligatori e opzionali
-	AttributeReader.readRequiredAttributes(params, this, ["name"], function(param){
-		throw new MaapError(
-            16000, 
-            `Required parameter '${param}' in row ${self.toString()} of '${this.parent.toString()}'`
-        );
-	});
-	AttributeReader.readOptionalAttributes(params, this, ["label", "transformation"]);
-	AttributeReader.assertEmptyAttributes(params, function(param){
-		throw new MaapError(
-            16000, 
-            `Unexpected parameter '${param}' in row '${self.toString()}' of '${parent.toString()}'`
-        );
-	});
+    // Leggi i parametri obbligatori e opzionali
+    AttributeReader.readRequiredAttributes(params, this, ["name"], (param) => {
+	throw new RequiredParamException(this, param);
+    });
+    AttributeReader.readOptionalAttributes(params, this, ["label", "transformation"]);
+    AttributeReader.assertEmptyAttributes(params, (param) => {
+	throw new UnexpectedParamException(this, param);
+    });
 
-	// Valori di default
-	if (this.label === undefined) {
-		this.label = this.name;
-	}
-	
-	// Controllo dei tipi
-	if (typeof this.label !== 'string' ||
-		typeof this.name !== 'string' ||
-		typeof this.transformation !== 'function'
-	) {
-		throw new MaapError(
-            16000, 
-            `Parameter with a wrong type in row '${this.toString()}' of '${this.parent.toString()}'`
-        );
-	}
+    // Valori di default
+    if (this.label === undefined) {
+	this.label = this.name;
+    }
+    
+    // Controllo dei tipi
+    if (typeof this.label !== 'string' ||C
+	typeof this.name !== 'string' ||
+	typeof this.transformation !== 'function'
+       ) {
+	throw new WrongTypeException(this);
+    }
 };
 
 Row.prototype.getLabel = function() {
-	return this.label;
+    return this.label;
 };
 
 Row.prototype.getName = function() {
-	return this.name;
+    return this.name;
 };
 
 Row.prototype.getTransformation = function() {
-	return this.transformation;
+    return this.transformation;
 };
 
 Row.prototype.toString = function() {
-	return this.getName();
+    return `Row ${this.getName()} of ${this.parent.toString()}`;
 };
 
 module.exports = Row;
