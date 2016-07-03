@@ -30,6 +30,13 @@ describe("collectionEngine", () => {
             `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
         )
 
+	mongoose.connect(`mongodb://${process.env.npm_package_config_CONNECTION}/prova`);
+
+	var Model = mongoose.model('test', { user: String, pass: String });
+	Model.find((err, data) => {
+	    console.log(err || data);
+	});
+
 	token = engine.generateToken(connection);
 
         engine.pushToken(token);
