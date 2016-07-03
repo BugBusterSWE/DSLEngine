@@ -57,7 +57,7 @@ DSLEngine.prototype.collection = function () {
     return this.collectionEngine;
 };
 
-DSLEngine.prototype.dashboardEngine = function () {
+DSLEngine.prototype.dashboard = function () {
     if (this.token == undefined) {
         throw new NoTokenConnectedException();
     }
@@ -65,7 +65,7 @@ DSLEngine.prototype.dashboardEngine = function () {
     return this.dashboardEngine;
 };
 
-DSLEngine.prototype.documentEngine = function () {
+DSLEngine.prototype.document = function () {
     if (this.token == undefined) {
         throw new NoTokenConnectedException();
     }
@@ -158,5 +158,6 @@ DSLEngine.prototype.pushToken = function (token) {
     this.node.emitPushToken(token);
 };
 
-module.exports = DSLEngine;
+// Singleton
+module.exports = new DSLEngine();
 
