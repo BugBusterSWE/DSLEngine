@@ -215,10 +215,8 @@ function getIdByLabel(label, callback) {
 
 function loadEnvironment(token) {
     var loadModules = token.load(_LABEL);
-
-    if (loadModules != undefined) {
-	this.registry = loadModules;
-    }
+    // Clear the environment if no models is loaded
+    this.registry = loadModules || {};
 }
 
 /**
