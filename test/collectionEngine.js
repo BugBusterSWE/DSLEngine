@@ -28,14 +28,7 @@ describe("collectionEngine", () => {
 
         var connection = mongoose.createConnection(
             `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
-        )
-
-	mongoose.connect(`mongodb://${process.env.npm_package_config_CONNECTION}/prova`);
-
-	var Model = mongoose.model('test', { user: String, pass: String });
-	Model.find((err, data) => {
-	    console.log(err || data);
-	});
+        );
 
 	token = engine.generateToken(connection);
 
@@ -43,7 +36,7 @@ describe("collectionEngine", () => {
 	collectionEngine = engine.collection();
 
 	var load = engine.loadDSL(`collection(
-	    name: "test",
+	    name: "tests",
 	    label: "test"
 	) {
 	    index() {
@@ -58,6 +51,18 @@ describe("collectionEngine", () => {
 		    name: "pass",
 		    label: "Password",
 		    sortable: true
+		)
+	    }
+
+	    show() {
+		row(
+		    name: "user"
+		)
+		row(
+		    name: "pass",
+		    transformation: function (val) {
+			return val + " 1";
+		    }
 		)
 	    }
 	}`);
@@ -82,10 +87,26 @@ describe("collectionEngine", () => {
 
 	    var promise = collectionEngine.getIndexPage(id);
 	    promise.then((data) => {
-		console.log(data);
+		console.log(JSON.stringify(data));
 		done();
 	    }).catch((err) => {
-		console.log(err);
+		done(err);
+	    });
+	});
+    });
+
+    describe("#getShowPage", () => {
+	it("should get the structure of the show page", (done) => {
+	    var list = collectionEngine.list();
+	    var id = list[0].id;
+	    
+	    var promise = collectionEngine.getShowPage(
+		id, 
+		"577902e2dcba0f46c490afa2"
+	    );
+	    promise.then((data) => {
+		done();
+	    }).catch((err) => {
 		done(err);
 	    });
 	});
