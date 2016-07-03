@@ -45,7 +45,7 @@ var IndexModel = function(params, parent) {
     });
 
     // Leggi i parametri opzionali
-    AttributeReader.readOptionalAttributes(params, this, ["perpage", "populate", "sortby", "order", "query", "populate"]);
+    AttributeReader.readOptionalAttributes(params, this, ["perpage", "sortby", "order", "query", "populate"]);
 
     // Verifica che i parametri non siano vuoti
     AttributeReader.assertEmptyAttributes(params, (param) => {
