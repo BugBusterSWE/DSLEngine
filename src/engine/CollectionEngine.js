@@ -1,5 +1,7 @@
 var CollectionModel = require("../model/CollectionModel");
 var AttributeReader = require("../utils/AttributeReader");
+var CollectionNotFoundException = 
+    require("../utils/collectionNotFoundException");
 
 var _LABEL = "collection";
 
@@ -134,7 +136,7 @@ CollectionEngine.prototype.getIndexPage = function (id, option) {
 	    );
 
 	} else {
-	    reject(new MaapError(7000));
+	    reject(new CollectionNotFoundException(id));
 	}
     });
 };
@@ -155,7 +157,7 @@ CollectionEngine.prototype.getShowPage = function (id, documentId) {
     
     return new Promise((resolve, reject) => {
 	if (!collection) {
-	    reject(new MaapError(18000));
+	    reject(new CollectionNotFoundException(id));
 	} else {
 	    var showModel = collection.getShowModel();
 	    showModel.getData(
