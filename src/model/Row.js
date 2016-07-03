@@ -45,7 +45,7 @@ var Row = function(params, parent) {
     }
     
     // Controllo dei tipi
-    if (typeof this.label !== 'string' ||C
+    if (typeof this.label !== 'string' ||
 	typeof this.name !== 'string' ||
 	typeof this.transformation !== 'function'
        ) {
