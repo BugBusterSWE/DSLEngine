@@ -116,6 +116,7 @@ CollectionEngine.prototype.getCollectionModels = function () {
  */
 CollectionEngine.prototype.getIndexPage = function (id, option) {
     var collection = this.registry[id];
+    option = option || {};
     
     return new Promise((resolve, reject) => {
 	if (collection) {
