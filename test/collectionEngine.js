@@ -60,7 +60,6 @@ describe("collectionEngine", () => {
 	}).catch((err) => {
 	    done(err);
 	});
-*/
     });
 
     describe("#list", () => {
