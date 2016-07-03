@@ -5,7 +5,7 @@ var mongoose = require("mongoose");
 var chai = require("chai");
 chai.use(require("chai-as-promised"));
 
-var DSLEngine = require("../src/dslEngine");
+var engine = require("../src/dslEngine");
 var TokenAlreadyInsertException = require(
     "../src/utils/tokenAlreadyInsertException"
 );
@@ -17,16 +17,18 @@ var NoLabelException = require("../src/utils/noLabelException");
 var WrongTypeException = require("../src/utils/wrongTypeException");
 
 describe("LoadDSL", () => {
-    var engine;
     var token;
     
     before(() => {
-        engine = new DSLEngine();
         token = engine.generateToken(mongoose.createConnection(
             `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
         ));
         
         engine.pushToken(token);
+    });
+
+    after(() => {
+	engine.ejectSafelyToken();
     });
 
     describe("#loadCollectionWithoutLabel", () => {

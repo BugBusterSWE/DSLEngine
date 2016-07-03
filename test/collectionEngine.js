@@ -5,7 +5,7 @@ var mongoose = require("mongoose");
 var chai = require("chai");
 chai.use(require("chai-as-promised"));
 
-var DSLEngine = require("../src/dslEngine");
+var engine = require("../src/dslEngine");
 var TokenAlreadyInsertException = require(
     "../src/utils/tokenAlreadyInsertException"
 );
@@ -19,15 +19,13 @@ var WrongTypeException = require("../src/utils/wrongTypeException");
 var Schema = require("../src/model/DocumentSchema.js");
 
 describe("collectionEngine", () => {
-    var engine;
     var collectionEngine;
     var token;
     
     before((done) => {
-        engine = new DSLEngine();
 
         var connection = mongoose.createConnection(
-            `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
+	    `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
         );
 
 	token = engine.generateToken(connection);
@@ -74,6 +72,10 @@ describe("collectionEngine", () => {
 	});
     });
 
+    after(() => {
+	engine.ejectSafelyToken();
+    });
+
     describe("#list", () => {
 	it("shoud return all collection stored into the engine", () => {
 	    chai.expect(collectionEngine.list().length).to.equal(1);
@@ -87,7 +89,6 @@ describe("collectionEngine", () => {
 
 	    var promise = collectionEngine.getIndexPage(id);
 	    promise.then((data) => {
-		console.log(JSON.stringify(data));
 		done();
 	    }).catch((err) => {
 		done(err);
