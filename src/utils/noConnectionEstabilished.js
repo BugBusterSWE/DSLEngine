@@ -13,5 +13,10 @@
  */
 var NoConnectionEstabilished = function () {};
 
+// TODO
+NoConnectionEstabilished.prototype.message = function () {
+    return "";
+};
+
 module.exports = NoConnectionEstabilished;
 

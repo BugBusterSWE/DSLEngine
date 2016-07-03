@@ -12,4 +12,9 @@
  */
 var NoTokenConnectedException = function () {};
 
+// TODO
+NoTokenConnectedException.prototype.message = function () {
+    return "";
+};
+
 module.exports = NoTokenConnectedException;

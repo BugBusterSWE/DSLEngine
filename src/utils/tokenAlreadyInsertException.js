@@ -11,5 +11,10 @@
  */
 var TokenAlreadyInsertException = function () {};
 
+// TODO
+TokenAlreadyInsertException.prototype.message = function () {
+    return "";
+};
+
 module.exports = TokenAlreadyInsertException;
 

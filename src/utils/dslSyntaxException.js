@@ -1,4 +1,3 @@
-
 /**
  * Exception throw when there is a wrong dsl syntax
  * 
