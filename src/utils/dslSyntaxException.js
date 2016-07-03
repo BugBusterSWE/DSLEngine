@@ -14,8 +14,8 @@ var DSLSyntaxException = function (err) {
     this.err = err;
 };
 
-DSLSyntaxException.prototype.getError = function () {
-    return this.err;
+DSLSyntaxException.prototype.message = function () {
+    return `${this.err}`;
 };
 
 module.exports = DSLSyntaxException;
