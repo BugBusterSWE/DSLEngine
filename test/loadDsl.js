@@ -14,6 +14,7 @@ var NoTokenConnectedException = require(
 );
 var NoNameException = require("../src/utils/noNameException");
 var NoLabelException = require("../src/utils/noLabelException");
+var WrongTypeException = require("../src/utils/wrongTypeException");
 
 describe("LoadDSL", () => {
     var engine;
@@ -104,8 +105,29 @@ describe("LoadDSL", () => {
 	    ) {
 		index() {
 		    column (
-			name: "Ecco",
-			prova: 3
+			name: "Ecco"
+		    )
+		}
+	    }`;
+
+	    engine.loadDSL(dsl)
+	    .then(() => {
+		return done();
+	    }).catch((err) => {
+		return done(err);
+	    });
+	});
+    });
+
+    describe("#loadCollectionWithRow", () => {
+	it("shoud load the collection without errors", (done) => {
+	    var dsl = `collection (
+		name: "pippo",
+		label: "5"
+	    ) {
+		show () {
+		    row (
+			name: "gianni"
 		    )
 		}
 	    }`;
