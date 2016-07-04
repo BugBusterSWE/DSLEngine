@@ -3,8 +3,10 @@ var AttributeReader = require("../utils/AttributeReader");
 var DocumentSchema = require("./DocumentSchema");
 var ShowModel = require("./ShowModel");
 var MaapError = require("../utils/MaapError");
+var RequiredParamException = require("../utils/requiredParamException");
+var UnexpectedParamException = require("../utils/unexpectedParamException");
 
-var DocumentModel = function (param, connection) {
+var DocumentModel = function (params, connection) {
     this.showModel = new ShowModel({}, this);
 
     // Leggi i parametri obbligatori e opzionali
@@ -12,21 +14,14 @@ var DocumentModel = function (param, connection) {
         params, 
         this, 
         ["name", "label"], 
-        function (param) {
-            throw new MaapError(
-                8000, 
-                `Required parameter '${param}' in Document `+
-                `'${self.toString()}'`
-            );
-        }
+        (param) => {
+	    throw new RequiredParamException(this, param);
+	}
     );
     
     AttributeReader.readOptionalAttributes(params, this, [""]);
-    AttributeReader.assertEmptyAttributes(params, function (param) {
-	   throw new MaapError(
-           8000, 
-           `Unexpected parameter '${param}' in collection '${self.toString()}'`
-       );
+    AttributeReader.assertEmptyAttributes(params, (param) => {
+	throw new UnexpectedParamException(this, param);
     });
     
     this.model = connection.model(this.name, DocumentSchema);
@@ -51,6 +46,10 @@ DocumentModel.prototype.setShowModel = function(showModel) {
 
 DocumentModel.prototype.toString = function () {
     return `Document ${this.getLabel()}`;
+};
+
+DocumentModel.prototype.addRow = function (attribute) {
+    this.showModel.addRow(attribute);
 };
 
 module.exports = DocumentModel;
