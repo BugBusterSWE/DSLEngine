@@ -122,7 +122,7 @@ describe("LoadDSL", () => {
     });
 
     describe("#loadCollectionWithRow", () => {
-	it("shoud load the collection without errors", (done) => {
+	it("should load the collection without errors", (done) => {
 	    var dsl = `collection (
 		name: "pippo",
 		label: "5"
@@ -140,6 +140,42 @@ describe("LoadDSL", () => {
 	    }).catch((err) => {
 		return done(err);
 	    });
+	});
+    });
+
+    describe("#loadDocumentWithRow", () => {
+	it("should load the model without errors", (done) => {
+	    var dsl = `document(
+		name: "pippo",
+		label: "6"
+	    ) {
+		row(
+		    name: "p"
+		)
+		row(
+		    name: "s"
+		)
+	    }`;
+
+	    engine.loadDSL(dsl)
+	    .then(() => {
+		return done();
+	    }).catch((err) => {
+		return done(err);
+	    });
+	});
+    });
+
+    describe("#loadWrongDocument", () => {
+	it("should throw an exception", (done) => {
+	    var dsl = `document(
+		name: "tu"
+	    ) {}`;
+
+	    engine.loadDSL(dsl)
+		.catch((err) => {
+		    return done();
+		});
 	});
     });
 });
