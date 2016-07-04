@@ -1,7 +1,7 @@
 var CollectionModel = require("../model/CollectionModel");
 var AttributeReader = require("../utils/AttributeReader");
-var CollectionNotFoundException = 
-    require("../utils/collectionNotFoundException");
+var ModelNotFoundException = 
+    require("../utils/modelNotFoundException");
 
 var _LABEL = "collection";
 
@@ -136,7 +136,7 @@ CollectionEngine.prototype.getIndexPage = function (id, option) {
 	    );
 
 	} else {
-	    reject(new CollectionNotFoundException(id));
+	    reject(new ModelNotFoundException(id, 'collection'));
 	}
     });
 };
@@ -157,7 +157,7 @@ CollectionEngine.prototype.getShowPage = function (id, documentId) {
     
     return new Promise((resolve, reject) => {
 	if (!collection) {
-	    reject(new CollectionNotFoundException(id));
+	    reject(new ModelNotFoundException(id, 'collection'));
 	} else {
 	    var showModel = collection.getShowModel();
 	    showModel.getData(
@@ -207,7 +207,7 @@ function getIdByLabel(label, callback) {
     });
     
     if (coll == undefined) {
-        callback(new MaapError(18000));
+        callback(new ModelNotFoundException('collection', label));
     } else {
         callback(undefined, coll.getId());
     }

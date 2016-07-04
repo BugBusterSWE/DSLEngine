@@ -1,5 +1,6 @@
 var DocumentModel = require("../model/DocumentModel");
 var AttributeReader = require("../utils/AttributeReader");
+var ModelNotFoundException = require("../utils/modelNotFoundException");
 
 var _LABEL = "document";
 
@@ -94,11 +95,10 @@ DocumentEngine.prototype.getShowPage = function (id, documentId) {
     var documentModel = this.registry[id];
     
     return new Promise((resolve, reject) => {
-	var showModel = documentModel.getShowModel();
-        
-        if (!showModel) {
-	    reject(new MaapError(18000));
+        if (!documentModel) {
+	    reject(new ModelNotFoundException('document', id));
 	} else {
+	    var showModel = documentModel.getShowModel();
 	    showModel.getData(
 		documentId,
 		(data) => {
@@ -118,7 +118,7 @@ function getIdByLabel(label, callback) {
     });
     
     if (doc === undefined) {
-        callback(new MaapError(18000));
+        callback(new ModelNotFoundException('document', label));
     } else {
         callback(undefined, doc.getId());
     }
@@ -126,10 +126,7 @@ function getIdByLabel(label, callback) {
 
 function loadEnvironment(token) {
     var loadModules = token.load(_LABEL);
-
-    if (loadModules != undefined) {
-	this.registry = loadModules;
-    }
+    this.registry = loadModules || {};
 }
 
 function register(models) { 

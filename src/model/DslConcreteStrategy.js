@@ -28,6 +28,7 @@ var fs = require("fs");
 var vm = require("vm");
 
 var CollectionModel = require("./CollectionModel");
+var DocumentModel = require("./DocumentModel");
 var DSLSyntaxException = require("../utils/dslSyntaxException");
 var IndexModel = require("./IndexModel");
 var ShowModel = require("./ShowModel");
@@ -69,6 +70,7 @@ DslConcreteStrategy.prototype.load = function(content, connection) {
 	    require: require,
 	    db: connection,
 	    CollectionModel: CollectionModel,
+	    DocumentModel: DocumentModel,
 	    IndexModel: IndexModel,
 	    ShowModel: ShowModel,
 	    Row: Row,
