@@ -1,5 +1,5 @@
 /**
- * Exception throw when the id don't retrieve a collection.
+ * Exception throw when the id don't retrieve a model.
  * 
  * @history
  * | Name | Action performed | Date |
@@ -9,13 +9,15 @@
  * @author Andrea Mantovani
  * @license MIT
  */
-var CollectionNotFoundException = function (id) {
-    this.id = id;
+var ModelNotFoundException = function (ref, type) {
+    this.ref = ref;
+    this.type = type;
 };
 
-CollectionNotFoundException.prototype.message = function () {
-    return `The collection was referenced by id ${this.id} can not be found`;
+ModelNotFoundException.prototype.message = function () {
+    return `The model ${this.type} referenced by ${this.ref} can not ` +
+    `be found`;
 };
 
-module.exports = CollectionNotFoundException;
+module.exports = ModelNotFoundException;
 
