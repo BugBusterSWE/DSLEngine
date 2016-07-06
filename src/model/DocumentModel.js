@@ -4,6 +4,7 @@ var DocumentSchema = require("./DocumentSchema");
 var ShowModel = require("./ShowModel");
 var MaapError = require("../utils/MaapError");
 var RequiredParamException = require("../utils/requiredParamException");
+var NoLabelException = require("../utils/noLabelException");
 var UnexpectedParamException = require("../utils/unexpectedParamException");
 
 var DocumentModel = function (params, connection) {
@@ -15,7 +16,11 @@ var DocumentModel = function (params, connection) {
         this, 
         ["name", "label"], 
         (param) => {
-	    throw new RequiredParamException(this, param);
+	    if (param === "label") {
+		throw new NoLabelException("document");
+	    } else {
+		throw new RequiredParamException(this, param);
+	    }
 	}
     );
     
