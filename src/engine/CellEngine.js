@@ -9,6 +9,8 @@ var CellEngine = function (node) {
     this.registry = {};
     this.node = node;
 
+    this.getCellModel = getCellModel.bind(this);
+
     this.node.onLoad(register.bind(this));
     this.node.onEjectToken(saveEnvironment.bind(this));
     this.node.onPushToken(loadEnvironment.bind(this));
@@ -42,6 +44,32 @@ CellEngine.prototype.getValue = function (id) {
     });
 };
 
+CellEngine.prototype.list = function () {
+    var models = this.getCellModel();
+    var cells = [];
+
+    for (var i = 0; i < models.length; i++) {
+	cells.push({
+	    id: models[i].getId(),
+	    label: models[i].getLabel()
+	});
+    }
+
+    return cells;
+};
+
+function getCellModel() {
+    var models = [];
+
+    for (var id in this.registry) {
+	if (this.registry.hasOwnProperty(id)) {
+	    models.push(this.registry[id]);
+	}
+    }
+
+    return models;
+}
+
 function getIdByLabel(label, callback) {
     var c = this.registry.find((cell) => {
         return cell.getIdByLabel() === label;
@@ -56,10 +84,7 @@ function getIdByLabel(label, callback) {
 
 function loadEnvironment(token) {
     var loadModules = token.load(_LABEL);
-
-    if (loadModules != undefined) {
-	this.registry = loadModules;
-    }
+    this.registry = loadModules || {};
 }
 
 function register(models) {
