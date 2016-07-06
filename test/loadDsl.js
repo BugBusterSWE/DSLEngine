@@ -178,4 +178,22 @@ describe("LoadDSL", () => {
 		});
 	});
     });
+
+    describe("#loadCell", () => {
+	it("should load the model without errors", (done) => {
+	    var dsl = `cell(
+		label: "cell",
+		type: "img",
+		value: 3
+	    )`;
+
+	    engine.loadDSL(dsl)
+	    .then(() => {
+		return done();
+	    }).catch((err) => {
+		console.log(err);
+		return done();
+	    });
+	});
+    });
 });
