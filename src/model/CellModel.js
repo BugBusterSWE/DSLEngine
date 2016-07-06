@@ -19,7 +19,7 @@ var CellModel = function (params, connection) {
         }
     );
 
-    AttributeReader.readOptionalAttributes(param,this,[]);
+    AttributeReader.readOptionalAttributes(params,this,[]);
     
     // Verifica che i parametri non siano vuoti
     AttributeReader.assertEmptyAttributes(
