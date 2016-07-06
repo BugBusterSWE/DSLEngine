@@ -1,6 +1,6 @@
 {
   "name": "dslengine",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Engine to run DSL defined in the MaaP application",
   "main": "src/dslEngine.js",
   "config": {
