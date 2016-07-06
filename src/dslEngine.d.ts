@@ -9,10 +9,10 @@ declare module "dslengine" {
     import {Promise} from "es6-promise";
 
     export interface DSLEngine {
-	// cell() : CellEngine;
+	cell() : CellEngine;
 	collection() : CollectionEngine;
 	// dashboard() : DashboardEngine;
-	// document() : DocumentEngine;
+	document() : DocumentEngine;
 	ejectSafelyToken() : Token;
 	generateToken(db : mongoose.Connection) : Token;
 	loadDSL(dsl : string) : Promise<void>;

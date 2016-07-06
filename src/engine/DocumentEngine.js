@@ -8,6 +8,8 @@ var DocumentEngine = function (node) {
     this.registry = [];
     this.node = node;
     
+    this.getDocumentModel = getDocumentModel.bind(this);
+
     this.node.onLoad(register.bind(this));
     this.node.onEjectToken(saveEnvironment.bind(this));
     this.node.onPushToken(loadEnvironment.bind(this));
@@ -111,6 +113,33 @@ DocumentEngine.prototype.getShowPage = function (id, documentId) {
 	}
     });
 };
+
+DocumentEngine.prototype.list = function () {
+    var models = this.getDocumentModels();
+    var documents = [];
+
+    for (var i=0; i<models.length; i++) {
+	documents.push({
+	    id: models[i].getId(),
+	    name: models[i].getName(),
+	    label: models[i].getLabel()
+	});
+    }
+
+    return documents;
+};
+
+function getDocumentModel() {
+    var models = [];
+    
+    for (var id in this.registry) {
+	if (this.registry.hasOwnProperty(id)) {
+	    models.push(this.registry[id]);
+	}
+    }
+    
+    return models;
+}
 
 function getIdByLabel(label, callback) {
     var doc = this.registry.find((document) => {
