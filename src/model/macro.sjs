@@ -116,7 +116,7 @@ syntax cellInstance = function (ctx) {
         paramCtx.next();
     }
     
-    return #`new CellModel({${param}})`;
+    return #`new CellModel({${param}}, db)`;
 }
 
 syntax collectionInstance = function (ctx) {

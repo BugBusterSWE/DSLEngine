@@ -16,8 +16,6 @@ var NoNameException = require("../src/utils/noNameException");
 var NoLabelException = require("../src/utils/noLabelException");
 var WrongTypeException = require("../src/utils/wrongTypeException");
 
-var Schema = require("../src/model/DocumentSchema.js");
-
 describe("collectionEngine", () => {
     var collectionEngine;
     var token;

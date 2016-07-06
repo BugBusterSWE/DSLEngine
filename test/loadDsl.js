@@ -36,10 +36,10 @@ describe("LoadDSL", () => {
 	    var dsl = `collection() {}`;
 	    
 	    engine.loadDSL(dsl)
-	    .catch((err) => {
-		chai.expect(err).to.be.instanceof(NoLabelException);
-		done();
-	    });
+		.catch((err) => {
+		    chai.expect(err).to.be.instanceof(NoLabelException);
+		    done();
+		});
 	});
     });
     
@@ -52,11 +52,11 @@ describe("LoadDSL", () => {
 	    ) {}`;
 
             engine.loadDSL(dsl)
-	    .then(() => {
-		return done();
-	    }).catch((err) => {
-		return done(errs);
-	    });
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    done(errs);
+		});
 	});
     });
 
@@ -72,11 +72,11 @@ describe("LoadDSL", () => {
 	    }`;
 
 	    engine.loadDSL(dsl)
-	    .then(() => {
-		return done();
-	    }).catch((err) => {
-		return done(err);
-	    });
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    done(err);
+		});
 	});
     });
 
@@ -91,11 +91,11 @@ describe("LoadDSL", () => {
 	    }`;
 
 	    engine.loadDSL(dsl)
-	    .then(() => {
-		return done();
-	    }).catch((err) => {
-		return done(err);
-	    });
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    done(err);
+		});
 	});
     });
 
@@ -113,11 +113,11 @@ describe("LoadDSL", () => {
 	    }`;
 
 	    engine.loadDSL(dsl)
-	    .then(() => {
-		return done();
-	    }).catch((err) => {
-		return done(err);
-	    });
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    done(err);
+		});
 	});
     });
 
@@ -135,11 +135,11 @@ describe("LoadDSL", () => {
 	    }`;
 
 	    engine.loadDSL(dsl)
-	    .then(() => {
-		return done();
-	    }).catch((err) => {
-		return done(err);
-	    });
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    done(err);
+		});
 	});
     });
 
@@ -158,11 +158,11 @@ describe("LoadDSL", () => {
 	    }`;
 
 	    engine.loadDSL(dsl)
-	    .then(() => {
-		return done();
-	    }).catch((err) => {
-		return done(err);
-	    });
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    done(err);
+		});
 	});
     });
 
@@ -174,8 +174,50 @@ describe("LoadDSL", () => {
 
 	    engine.loadDSL(dsl)
 		.catch((err) => {
-		    return done();
+		    done();
+		});
+	});
+    });
+
+    describe("#loadElementaryCell", () => {
+	it("should load the model without errors", (done) => {
+	    var dsl = `cell(
+		label: "cell",
+		type: "img",
+		value: 3
+	    )`;
+
+	    engine.loadDSL(dsl)
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    console.log(err.message());
+		    done();
+		});
+	});
+    });
+
+    describe("#loadObjectCell", () => {
+	it("should load the model without errors", (done) => {
+	    var dsl = `cell(
+		label: "cell",
+		type: "img",
+		value: {
+		    collection: "tests",
+		    query: {
+			$lt: 5
+		    }
+		}
+	    )`;
+
+	    engine.loadDSL(dsl)
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    console.log(err.message());
+		    done();
 		});
 	});
     });
 });
+

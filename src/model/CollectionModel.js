@@ -24,7 +24,7 @@ var AttributeReader = require("../utils/AttributeReader");
 var DocumentSchema = require("./DocumentSchema");
 var ShowModel = require("./ShowModel");
 var IndexModel = require("./IndexModel");
-var NoNameException = require("../utils/noNameException");
+var RequiredParamException = require("../utils/requiredParamException");
 var NoLabelException = require("../utils/noLabelException");
 var UnexpectedParamException = require("../utils/unexpectedParamException");
 
@@ -43,10 +43,10 @@ var CollectionModel = function(params, connection) {
 	this, 
 	["label", "name"], 
 	function(param){
-	    if (param === "name") {
-		throw new NoNameException(self);
-	    } else {
+	    if (param === "label") {
 		throw new NoLabelException("Collection");
+	    } else {
+		throw new RequiredParamException(this, param);
 	    }
 	}
     );
