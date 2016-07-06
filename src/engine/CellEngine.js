@@ -1,5 +1,6 @@
 var CellModel = require("../model/CellModel");
 var AttributeReader = require("../utils/AttributeReader");
+var ModelNotFoundException = require("../utils/modelNotFoundException");
 
 var _LABEL = "cell";
 
@@ -31,7 +32,7 @@ CellEngine.prototype.getValue = function (id) {
 
     return new Promise((resolve, reject) => {
 	if (cell === undefined) {
-	    reject(new MaapError(7000));
+	    reject(new ModelNotFoundException('cell', id));
 	} else {
 	    cell.getData((err, data) => {
 		if (err) {
@@ -76,7 +77,7 @@ function getIdByLabel(label, callback) {
     });
     
     if (c == undefined) {
-        callback(new MaapError(18000));
+        callback(new ModelNotFoundException('cell', label));
     } else {
         callback(undefined, coll.getId());
     }
