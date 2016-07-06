@@ -23,6 +23,12 @@ declare module "dslengine" {
 
     interface ModelEngine {}
 
+    export interface CellEngine extends ModelEngine {
+	getValue(id : string) : Promise<CellContent>;
+
+	list() : Cell[];
+    }
+
     export interface CollectionEngine extends ModelEngine {
         getIndexPage(
 	    id : string, 
@@ -37,10 +43,39 @@ declare module "dslengine" {
 	list() : Collection[];
     }
         
+    export interface DocumentEngine extends ModelEngine {
+	getShowPage(id : string, documentId : string) : Promise<Document[]>;
+	list() : Doc[];
+    }
+
+    export interface Doc {
+	id: string;
+	name: string;
+	label: string;
+    }
+
     export interface Collection {
     	id : string;
         name : string;
         label : string;
+    }
+
+    export interface Cell {
+	id: string;
+	label: string;
+    }
+
+    export interface CellContent {
+	id: string;
+	label: string;
+	type: string;
+	result: Object;
+    }
+
+    export interface Document {
+	id: string;
+	name: string;
+	label: string;
     }
 
     export interface HeaderIndexPage {
