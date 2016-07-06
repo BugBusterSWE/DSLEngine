@@ -1,7 +1,10 @@
 var hash = require("object-hash");
 var AttributeReader = require("../utils/AttributeReader");
 var DocumentSchema = require("./DocumentSchema");
-var MaapError = require("../utils/MaapError");
+var NoLabelException = require("../utils/noLabelException");
+var RequiredParamException = require("../utils/requiredParamException");
+var UnexpectedParamException = require("../utils/unexpectedParamException");
+var WrongTypeException = require("../utils/wrongTypeException");
 
 var CellModel = function (params, connection) {
     this.source = {};
@@ -11,11 +14,12 @@ var CellModel = function (params, connection) {
         params, 
         this, 
         ["type", "label", "value"],
-        function (param) {
-            throw new MaapError(
-                8000,
-                `Required parameter \'${param}\' in \'${this.toString()}\'`
-            );
+        (param) => {
+	    if (param === "label") {
+		throw new NoLabelException("cell");
+	    } else {
+		throw new RequiredParamException(this, param);
+	    }
         }
     );
 
@@ -24,49 +28,42 @@ var CellModel = function (params, connection) {
     // Verifica che i parametri non siano vuoti
     AttributeReader.assertEmptyAttributes(
         params, 
-        function(param) {
-            throw new MaapError(
-                14000, 
-                `Unexpected parameter \'${param}\' in \'${this.toString()}\'`
-            );
+        (param) => {
+	    throw new UnexpectedParamException(this, param);
         }
     );
     
     if (!(
-        this.value instanceof String || 
-        this.value instanceof Number || 
-        this.value instanceof Object
+        typeof this.value === "string" || 
+        typeof this.value === "number" || 
+        typeof this.value === "object"
     )) {
-        throw new CellUnknowTypeValue(this);
+        throw new WrongTypeException(this);
     }
-    
-    if (this.value instanceof Object) {
+
+    if (typeof this.value === "object") {
 	this.sortby = "_id";
 	this.order = "asc";
 
         AttributeReader.readRequiredAttributes(
             this.value,
             this,
-            ["collection", "query"]
+            ["collection"]
         )
 
 	AttributeReader.readOptionalAttributes(
 	    this.value,
 	    this,
-	    ["sortby", "order"]
+	    ["sortby", "order", "query"]
 	);
 
 	AttributeReader.assertEmptyAttributes(
 	    this.value,
-	    function (param) {
-		throw new MaapError(
-		    14000,
-		    `Unexpected parameter \'${param}\' in ` +
-	            `\'${this.toString()}\'`
-		);
+	    (param) => {
+		throw new UnexpectedParamException(this, param);
 	    }
 	);
-	
+
 	this.model = connection.model(this.collection, DocumentSchema);
 	delete this.value;
     }
@@ -94,7 +91,7 @@ CellModel.prototype.getData = function (callback) {
         result: {}
     };
     
-    if (this.value instanceof String || this.value instanceof Number) {
+    if (typeof this.value === "string" || typeof this.value === "number" ) {
         jsonResult.result = this.value;
         callback(undefined, jsonResult);
     } else {
