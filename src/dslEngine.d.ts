@@ -72,12 +72,6 @@ declare module "dslengine" {
 	result: Object;
     }
 
-    export interface Document {
-	id: string;
-	name: string;
-	label: string;
-    }
-
     export interface HeaderIndexPage {
         label : string;
         name : string;
