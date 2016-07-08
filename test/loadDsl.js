@@ -218,7 +218,7 @@ describe("LoadDSL", () => {
 	});
     });
 
-    describe("#loadDashboard", () => {
+    describe.skip("#loadDashboard", () => {
 	it("should load the model without errors", (done) => {
 	    var dsl = `dashboard(
 		label: "dash"
