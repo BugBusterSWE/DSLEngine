@@ -191,7 +191,6 @@ describe("LoadDSL", () => {
 		.then(() => {
 		    done();
 		}).catch((err) => {
-		    console.log(err.message());
 		    done();
 		});
 	});
@@ -214,8 +213,33 @@ describe("LoadDSL", () => {
 		.then(() => {
 		    done();
 		}).catch((err) => {
-		    console.log(err.message());
 		    done();
+		});
+	});
+    });
+
+    describe("#loadDashboard", () => {
+	it("should load the model without errors", (done) => {
+	    var dsl = `dashboard(
+		label: "dash"
+	    ) {
+		row(
+		    cell("cell")
+		    document("6")
+		)
+
+		row(
+		    collection("1")
+		    collection("3")
+		)
+	    }`;
+
+	    engine.loadDSL(dsl)
+		.then(() => {
+		    done();
+		}).catch((err) => {
+		    console.log(err.message());
+		    done(err);
 		});
 	});
     });
