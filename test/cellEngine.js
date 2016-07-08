@@ -5,7 +5,7 @@ var mongoose = require("mongoose");
 var chai = require("chai");
 chai.use(require("chai-as-promised"));
 
-var engine = require("../src/dslEngine");
+var dslengine = require("../src/dslEngine");
 var TokenAlreadyInsertException = require(
     "../src/utils/tokenAlreadyInsertException"
 );
@@ -17,10 +17,13 @@ var NoLabelException = require("../src/utils/noLabelException");
 var WrongTypeException = require("../src/utils/wrongTypeException");
 
 describe("CellEngine", () => {
+    var engine;
     var cellEngine;
     var token;
 
     before((done) => {
+	engine = dslengine.engine;
+
 	var connection = mongoose.createConnection(
 	    `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
 	);

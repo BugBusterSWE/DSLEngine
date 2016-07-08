@@ -1,6 +1,6 @@
 var chai = require("chai");
 
-var engine = require("../src/dslEngine");
+var dslengine = require("../src/dslEngine");
 var TokenAlreadyInsertException = require(
     "../src/utils/tokenAlreadyInsertException"
 );
@@ -10,7 +10,12 @@ var NoTokenConnectedException = require(
 
 describe("Token", () => {
     var token;
+    var engine;
 
+    before(() => {
+	engine = dslengine.engine;
+    });
+    
     describe("#createToken", () => {
         it("should return a not undefined token", () => {
             token = engine.generateToken(undefined);
