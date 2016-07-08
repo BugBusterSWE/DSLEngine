@@ -22,7 +22,7 @@ describe("collectionEngine", () => {
     var token;
     
     before((done) => {
-	engine = dslengine.engine;
+	engine = new dslengine.engine();
 
         var connection = mongoose.createConnection(
 	    `mongodb://${process.env.npm_package_config_CONNECTION}/prova`

@@ -13,7 +13,7 @@ describe("Token", () => {
     var engine;
 
     before(() => {
-	engine = dslengine.engine;
+	engine = new dslengine.engine();
     });
     
     describe("#createToken", () => {

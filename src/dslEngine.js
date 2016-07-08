@@ -159,5 +159,5 @@ DSLEngine.prototype.pushToken = function (token) {
 };
 
 // Singleton
-module.exports.engine = new DSLEngine();
+module.exports.engine = DSLEngine;
 
