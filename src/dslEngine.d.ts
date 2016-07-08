@@ -8,7 +8,11 @@ declare module "dslengine" {
     import * as mongoose from "mongoose";
     import {Promise} from "es6-promise";
 
-    export interface DSLEngine {
+    export engine : DSLEngine = new DSLEngine();
+
+    class DSLEngine {
+	constructor();
+
 	cell() : CellEngine;
 	collection() : CollectionEngine;
 	// dashboard() : DashboardEngine;
