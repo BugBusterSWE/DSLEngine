@@ -21,7 +21,7 @@ describe("LoadDSL", () => {
     var engine;
     
     before(() => {
-	engine = new dslengine.engine();
+	engine = new dslengine.DSLEngine();
 
         token = engine.generateToken(mongoose.createConnection(
             `mongodb://${process.env.npm_package_config_CONNECTION}/prova`

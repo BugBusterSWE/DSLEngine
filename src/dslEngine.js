@@ -158,6 +158,5 @@ DSLEngine.prototype.pushToken = function (token) {
     this.node.emitPushToken(token);
 };
 
-// Singleton
-module.exports.engine = DSLEngine;
+module.exports.DSLEngine = DSLEngine;
 

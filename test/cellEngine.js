@@ -22,7 +22,7 @@ describe("CellEngine", () => {
     var token;
 
     before((done) => {
-	engine = new dslengine.engine();
+	engine = new dslengine.DSLEngine();
 
 	var connection = mongoose.createConnection(
 	    `mongodb://${process.env.npm_package_config_CONNECTION}/prova`
