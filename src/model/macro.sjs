@@ -276,7 +276,7 @@ syntax dashboard = function (ctx) {
         paramCtx.next();
     }
      
-    let result = #`var _dashboard = new DashboardModel({${param}})`;
+    let result = #`var _dashboard = new DashboardModel({${param}}); registerModel(_dashboard);`;
      
     // Get all structures
     for (let btx of bodyCtx) {
@@ -284,6 +284,6 @@ syntax dashboard = function (ctx) {
             result = result.concat(#`dashrow ${bodyCtx.next().value} _dashboard`);
         }
     }
-     
+
     return result;
 } 

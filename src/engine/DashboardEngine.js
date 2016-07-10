@@ -9,8 +9,8 @@ var DashboardEngine = function (node) {
     this.registry = {};
     this.node = node;
     
-    this.register = register;
-    this.replaceLabelWithId = replaceLabelWithId;
+    this.register = register.bind(this);
+    this.replaceLabelWithId = replaceLabelWithId.bind(this);
     
     this.node.onLoad(this.register);
     this.node.onEjectToken(saveEnvironment.bind(this));
@@ -35,18 +35,16 @@ DashboardEngine.prototype.getDashboard = function (id) {
 
 function loadEnvironment(token) {
     var loadModules = token.load(_LABEL);
-
-    if (loadModules != undefined) {
-	this.registry = loadModules;
-    }
+    this.registry = loadModules || {};
 }
 
 function replaceLabelWithId(reference) {
+    console.log(reference);
     var idAndType = {
         type: reference.type,
         id: String 
     };
-        
+
     return new Promise((resolve, reject) => {
         var getId = (err, id) => {
             if (err) {
@@ -58,11 +56,11 @@ function replaceLabelWithId(reference) {
         };
         
         if (reference.type === "cell") {
-            this.token.emit("getIdCellByLabel", reference.label, getId);
+            this.node.emit("getIdCellByLabel", reference.label, getId);
         } else if (reference.type === "collection") {
-            this.token.emit("getIdCollectionByLabel", reference.label, getId);
+            this.node.emit("getIdCollectionByLabel", reference.label, getId);
         } else if (reference.type === "document") {
-            this.token.emit("getIdDocumentByLabel", reference.label, getId);
+            this.node.emit("getIdDocumentByLabel", reference.label, getId);
         }
     });
 };
@@ -93,7 +91,7 @@ function register(models) {
                 validMatrix.push(coll);
                 
                 promiseVector.forEach((promise) => {
-                    ready = ready.then(()=>{
+                    ready = ready.then(() => {
                         return promise
                     }).then((val) => {
                         coll.push(val);    
@@ -107,8 +105,8 @@ function register(models) {
                 if (errors.length > 0) {
                     this.node.emitReply(errors);
                 } else {
+		    console.log(validMatrix);
                     model.setReferenceMatrix(validMatrix);
-                    
                     this.registry[model.getId()] = model;
                     this.node.emitReply();
                 }

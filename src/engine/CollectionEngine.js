@@ -202,14 +202,19 @@ function compareCollectionWeight(a, b) {
 };
 
 function getIdByLabel(label, callback) {
-    var coll = this.registry.find((collection) => {
-        return collection.getLabel() === label;        
-    });
+    var id = undefined;
+
+    for (collection in this.registry) {
+	if (this.registry[collection].getLabel() === label) {
+	    id = collection;
+	    break;
+	}
+    }
     
-    if (coll == undefined) {
+    if (id == undefined) {
         callback(new ModelNotFoundException('collection', label));
     } else {
-        callback(undefined, coll.getId());
+        callback(undefined, id);
     }
 }
 

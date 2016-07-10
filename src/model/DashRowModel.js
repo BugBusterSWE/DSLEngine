@@ -5,7 +5,7 @@ var MaapError = require("../utils/MaapError");
 
 var DashRowModel = function () {
     this.column = [];
-}
+};
 
 DashRowModel.prototype.registerCell = function (cellReference) {
     this.column.push({
@@ -14,7 +14,7 @@ DashRowModel.prototype.registerCell = function (cellReference) {
     });
 };
 
-DashRowModel.protype.registerCollection = function (collectionReference) {
+DashRowModel.prototype.registerCollection = function (collectionReference) {
     this.column.push({
         type: "collection",
         label: collectionReference

@@ -30,6 +30,8 @@ var vm = require("vm");
 var CollectionModel = require("./CollectionModel");
 var DocumentModel = require("./DocumentModel");
 var CellModel = require("./CellModel");
+var DashRowModel = require("./DashRowModel");
+var DashboardModel = require("./DashboardModel");
 var DSLSyntaxException = require("../utils/dslSyntaxException");
 var IndexModel = require("./IndexModel");
 var ShowModel = require("./ShowModel");
@@ -73,6 +75,8 @@ DslConcreteStrategy.prototype.load = function(content, connection) {
 	    CollectionModel: CollectionModel,
 	    DocumentModel: DocumentModel,
 	    CellModel: CellModel,
+	    DashboardModel: DashboardModel,
+	    DashRowModel: DashRowModel,
 	    IndexModel: IndexModel,
 	    ShowModel: ShowModel,
 	    Row: Row,

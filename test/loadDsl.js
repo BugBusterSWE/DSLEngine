@@ -221,19 +221,39 @@ describe("LoadDSL", () => {
 	});
     });
 
-    describe.skip("#loadDashboard", () => {
+    describe.only("#loadDashboard", () => {
 	it("should load the model without errors", (done) => {
-	    var dsl = `dashboard(
+	    var dsl = `collection(
+		name: "prova",
+		label: "prova"
+	    ){}
+
+
+	    cell(
+		label: "pane",
+		type: "data",
+		value: 5
+	    )
+
+	    document(
+		name: "prova",
+		label: "ciccio"
+	    ){}
+	    
+
+	    dashboard(
 		label: "dash"
 	    ) {
 		row(
-		    cell("cell")
-		    document("6")
+		    collection("prova")
+		    collection("prova")
+		    cell("pane")
 		)
-
+		
 		row(
-		    collection("1")
-		    collection("3")
+		    cell("pane")
+		    collection("prova")
+		    cell("pane")
 		)
 	    }`;
 
@@ -241,7 +261,7 @@ describe("LoadDSL", () => {
 		.then(() => {
 		    done();
 		}).catch((err) => {
-		    console.log(err.message());
+		    console.log(`Err test: ${err.message()}`);
 		    done(err);
 		});
 	});

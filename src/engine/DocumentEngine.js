@@ -5,7 +5,7 @@ var ModelNotFoundException = require("../utils/modelNotFoundException");
 var _LABEL = "document";
 
 var DocumentEngine = function (node) {
-    this.registry = [];
+    this.registry = {};
     this.node = node;
     
     this.getDocumentModel = getDocumentModel.bind(this);
@@ -13,7 +13,7 @@ var DocumentEngine = function (node) {
     this.node.onLoad(register.bind(this));
     this.node.onEjectToken(saveEnvironment.bind(this));
     this.node.onPushToken(loadEnvironment.bind(this));
-    this.node.on("getIdDocumentById", getIdByLabel.bind(this));
+    this.node.on("getIdDocumentByLabel", getIdByLabel.bind(this));
 };
 
 /**
@@ -142,14 +142,22 @@ function getDocumentModel() {
 }
 
 function getIdByLabel(label, callback) {
-    var doc = this.registry.find((document) => {
-        return document.getLabel() === label;    
-    });
-    
-    if (doc === undefined) {
+    var id = undefined;
+
+    console.log(this.registry);
+
+    for (document in this.registry) {
+	console.log(document);
+	if (this.registry[document].getLabel() === label) {
+	    id = document;
+	    break;
+	}
+    }
+
+    if (id == undefined) {
         callback(new ModelNotFoundException('document', label));
     } else {
-        callback(undefined, doc.getId());
+        callback(undefined, id);
     }
 }
 

@@ -72,14 +72,19 @@ function getCellModel() {
 }
 
 function getIdByLabel(label, callback) {
-    var c = this.registry.find((cell) => {
-        return cell.getIdByLabel() === label;
-    });
-    
-    if (c == undefined) {
+    var id = undefined;
+
+    for (cell in this.registry) {
+	if (this.registry[cell].getLabel() === label) {
+	    id = cell;
+	    break;
+	}
+    }
+
+    if (id == undefined) {
         callback(new ModelNotFoundException('cell', label));
     } else {
-        callback(undefined, coll.getId());
+        callback(undefined, id);
     }
 }
 

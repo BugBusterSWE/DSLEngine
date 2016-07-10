@@ -17,7 +17,7 @@ var DashboardModel = function(params) {
         }
     );
     
-    AttributeReader.readOptionalAttributes(param,this,[]);
+    AttributeReader.readOptionalAttributes(params,this,[]);
     
     // Verifica che i parametri non siano vuoti
     AttributeReader.assertEmptyAttributes(
