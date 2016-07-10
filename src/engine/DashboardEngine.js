@@ -17,6 +17,36 @@ var DashboardEngine = function (node) {
     this.node.onPushToken(loadEnvironment.bind(this));
 }
 
+/**
+ */
+DashboardEngine.prototype.getDashboardModels = function () {
+    var models = [];
+
+    for (var id in this.registry) {
+	if (this.registry.hasOwnProperty(id)) {
+	    models.push(this.registry[id]);
+	}
+    }
+
+    return models;
+};
+
+/**
+ */
+DashboardEngine.prototype.list = function () {
+    var models = this.getDashboardModels();
+    var dashboard = [];
+
+    for (var i=0; i<models.length; i++) {
+	dashboard.push({
+	    id: models[i].getId(),
+	    label: models[i].getLabel()
+	});
+    }
+
+    return dashboard;
+};
+
 DashboardEngine.prototype.getDashboard = function (id) {
     var dashboard = this.registry[id];
     

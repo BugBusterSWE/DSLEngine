@@ -25,6 +25,26 @@ declare module "dslengine" {
 
     interface ModelEngine {}
 
+    export interface DashboardEngine extends ModelEngine {
+        getDashboard(id : string) : Promise<DashboardContent>;
+
+    	list() : Dashboard[];
+    }
+
+    export interface DashboardContent {
+    	id : String;
+	label : string;
+	content: [[{
+ 	  type: String,
+	  id: String
+	}]];
+    }
+
+    export interface Dashboard {
+        id: String;
+	label: String;
+    }	   
+
     export interface CellEngine extends ModelEngine {
 	getValue(id : string) : Promise<CellContent>;
 
