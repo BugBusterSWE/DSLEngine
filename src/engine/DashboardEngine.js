@@ -69,7 +69,6 @@ function loadEnvironment(token) {
 }
 
 function replaceLabelWithId(reference) {
-    console.log(reference);
     var idAndType = {
         type: reference.type,
         id: String 
@@ -135,7 +134,6 @@ function register(models) {
                 if (errors.length > 0) {
                     this.node.emitReply(errors);
                 } else {
-		    console.log(validMatrix);
                     model.setReferenceMatrix(validMatrix);
                     this.registry[model.getId()] = model;
                     this.node.emitReply();

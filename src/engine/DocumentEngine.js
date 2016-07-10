@@ -143,11 +143,8 @@ function getDocumentModel() {
 
 function getIdByLabel(label, callback) {
     var id = undefined;
-
-    console.log(this.registry);
-
+    
     for (document in this.registry) {
-	console.log(document);
 	if (this.registry[document].getLabel() === label) {
 	    id = document;
 	    break;
