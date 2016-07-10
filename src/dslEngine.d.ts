@@ -13,7 +13,7 @@ declare module "dslengine" {
 
 	cell() : CellEngine;
 	collection() : CollectionEngine;
-	// dashboard() : DashboardEngine;
+	dashboard() : DashboardEngine;
 	document() : DocumentEngine;
 	ejectSafelyToken() : Token;
 	generateToken(db : mongoose.Connection) : Token;
