@@ -221,39 +221,27 @@ describe("LoadDSL", () => {
 	});
     });
 
-    describe.only("#loadDashboard", () => {
-	it("should load the model without errors", (done) => {
-	    var dsl = `collection(
-		name: "prova",
-		label: "prova"
-	    ){}
-
-
-	    cell(
-		label: "pane",
-		type: "data",
-		value: 5
-	    )
-
-	    document(
+    describe("#loadDashboard", () => {
+	beforeEach(function (done) {
+	    var dsl = `document(
 		name: "prova",
 		label: "ciccio"
-	    ){}
+	    ){}`
 	    
+	    engine.loadDSL(dsl).then(() => {
+		console.log("caricata");
+		done();
+	    }).catch((err) => {
+		done(err);
+	    });
+	});
 
-	    dashboard(
+	it("should load the model without errors", (done) => {
+	    var dsl = `dashboard(
 		label: "dash"
 	    ) {
 		row(
-		    collection("prova")
-		    collection("prova")
-		    cell("pane")
-		)
-		
-		row(
-		    cell("pane")
-		    collection("prova")
-		    cell("pane")
+		    document("ciccio")
 		)
 	    }`;
 
